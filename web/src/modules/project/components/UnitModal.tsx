@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
+import { useFavoriteUnits } from "@/common/hooks/useFavoriteUnits";
 import UnitModalDetail from "./UnitModalDetail";
 import type { UnitWithProject } from "../models/project-detail.model";
 
@@ -12,6 +13,7 @@ type UnitModalProps = {
 const UnitModal = ({ unit, onClose }: UnitModalProps) => {
   const dialogRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
+  const { isFavorite, toggle } = useFavoriteUnits();
 
   // Phím Escape đóng modal + focus trap đơn giản
   const handleKeyDown = useCallback(
@@ -80,7 +82,7 @@ const UnitModal = ({ unit, onClose }: UnitModalProps) => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 max-md:items-end max-md:p-0"
       role="dialog"
       aria-modal="true"
       aria-labelledby="unit-modal-title"
@@ -97,27 +99,18 @@ const UnitModal = ({ unit, onClose }: UnitModalProps) => {
       <div
         ref={dialogRef}
         tabIndex={-1}
-        className="relative z-10 flex h-[95vh] w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-2xl focus:outline-none"
+        className="relative z-10 flex h-[95vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl focus:outline-none max-md:h-[100dvh] max-md:rounded-none"
       >
-        {/* Close button fixed ở góc trên phải */}
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Đóng"
-          className="absolute right-4 top-4 z-20 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-gray-500 shadow-sm backdrop-blur transition hover:bg-white hover:text-gray-700"
-        >
-          ✕
-        </button>
-
         {/* Content */}
-        <div className="h-full w-full overflow-auto px-4 pt-2">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-4 pt-2 max-md:px-3 max-md:pb-[env(safe-area-inset-bottom)]">
           <UnitModalDetail
             code={unit.code}
             phaseName={unit.phaseName ?? "Phân khu mặc định"}
             price={unit.listedPrice ?? 0}
             isStock={unit.status === "con-hang"}
             isHot={true}
-            isFavorite={false}
+            isFavorite={isFavorite(unit.publicId)}
+            onToggleFavorite={() => toggle(unit.publicId)}
             time="15/09/2026 09:43"
             propertyTypeLabel={unit.propertyTypeLabel ?? "Liền kề"}
             direction={unit.direction ?? "Đông"}

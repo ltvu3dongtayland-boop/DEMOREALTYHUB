@@ -1,8 +1,9 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { FiFilter, FiX } from 'react-icons/fi';
+import { FiFilter, FiHeart, FiX } from 'react-icons/fi';
 import Pagination from '@/common/components/Pagination';
+import { useFavoriteUnits } from '@/common/hooks/useFavoriteUnits';
 import {
   formatBillion,
   formatMillionPerSqm,
@@ -20,6 +21,7 @@ import {
   type UnitStatus,
   type UnitWithProject,
 } from '../../../models/project-detail.model';
+import UnitModal from '../../UnitModal';
 
 const PAGE_SIZE_OPTIONS = [24, 48, 96];
 
@@ -85,6 +87,7 @@ const UnitsTab = ({ slug, lockedPhaseName }: UnitsTabProps) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
   const [selectedUnit, setSelectedUnit] = useState<UnitWithProject | null>(null);
+  const { isFavorite, toggle } = useFavoriteUnits();
 
   const unitsQuery = useProjectUnits(slug, query);
   const projectQuery = useProjectDetail(slug);
@@ -308,13 +311,34 @@ const UnitsTab = ({ slug, lockedPhaseName }: UnitsTabProps) => {
                       </td>
 
                       <td className="whitespace-nowrap px-3 py-2.5">
-                        <button
-                          type="button"
-                          onClick={() => handleUnitClick(unit)}
-                          className="rounded bg-error-50 px-2 py-1 text-theme-xs font-bold text-error-600 transition hover:bg-error-100 hover:text-error-700 focus:outline-none focus:ring-2 focus:ring-error-500 focus:ring-offset-1"
-                        >
-                          {unit.code}
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => toggle(unit.publicId)}
+                            aria-label={
+                              isFavorite(unit.publicId)
+                                ? `Bỏ yêu thích căn ${unit.code}`
+                                : `Yêu thích căn ${unit.code}`
+                            }
+                            aria-pressed={isFavorite(unit.publicId)}
+                            className={`inline-flex h-8 w-8 items-center justify-center rounded-full transition ${
+                              isFavorite(unit.publicId)
+                                ? 'bg-error-50 text-error-500'
+                                : 'text-gray-400 hover:bg-gray-100 hover:text-error-500'
+                            }`}
+                          >
+                            <FiHeart
+                              className={`h-4 w-4 ${isFavorite(unit.publicId) ? 'fill-current' : ''}`}
+                            />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleUnitClick(unit)}
+                            className="rounded bg-error-50 px-2 py-1 text-theme-xs font-bold text-error-600 transition hover:bg-error-100 hover:text-error-700 focus:outline-none focus:ring-2 focus:ring-error-500 focus:ring-offset-1"
+                          >
+                            {unit.code}
+                          </button>
+                        </div>
                       </td>
 
                       <td className="whitespace-nowrap px-3 py-2.5 text-theme-sm font-bold text-gray-900">
@@ -401,6 +425,8 @@ const UnitsTab = ({ slug, lockedPhaseName }: UnitsTabProps) => {
       <p className="mt-3 text-theme-xs text-gray-400">
         Tổng {formatNumber(total)} căn khớp điều kiện hiện tại.
       </p>
+
+      <UnitModal unit={selectedUnit} onClose={() => setSelectedUnit(null)} />
     </div>
   );
 };

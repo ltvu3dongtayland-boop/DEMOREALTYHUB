@@ -3,9 +3,9 @@ import { Suspense } from 'react';
 import FavoriteList from '@/modules/project/components/FavoriteList';
 
 export const metadata: Metadata = {
-  title: 'Dự án yêu thích',
+  title: 'Yêu thích',
   description:
-    'Danh sách các dự án bất động sản bạn đã lưu để theo dõi và so sánh.',
+    'Danh sách dự án và quỹ căn bạn đã lưu để theo dõi và so sánh.',
 };
 
 /**

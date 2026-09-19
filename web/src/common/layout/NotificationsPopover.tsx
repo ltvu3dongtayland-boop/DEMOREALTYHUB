@@ -8,75 +8,17 @@ import { HiMail } from 'react-icons/hi';
 
 import { Link, useRouter } from '@/i18n/navigation';
 
+import OpenMailboxIcon from '@/common/components/OpenMailboxIcon';
+import { formatNotificationTime } from '@/common/utils/format';
+
 import {
-  CATEGORY_TONE,
   MOCK_NOTIFICATIONS,
   type NotificationItem,
 } from '@/modules/notifications/mocks/notifications.mock';
 
-/** Icon hop thu mo — hien khi thong bao da doc. */
-const OpenMailboxIcon = ({ className }: { className?: string }) => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden
-    className={className}
-  >
-    <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7" />
-    <path d="M3 7 12 2l9 5-9 5-9-5Z" />
-  </svg>
-);
-
-type Variant = 'solid' | 'transparent';
-
 type NotificationsPopoverProps = {
-  /** 'solid' (nen trang) hoac 'transparent' (header trong suot o trang chu). */
-  variant: Variant;
   /** Class cho icon bell - truyen tu SiteHeader de giong cac icon khac. */
   iconClass: string;
-};
-
-const TIME_ZONE = 'Asia/Bangkok';
-const hourFormatter = new Intl.DateTimeFormat('vi-VN', {
-  hour: '2-digit',
-  minute: '2-digit',
-  hour12: false,
-  timeZone: TIME_ZONE,
-});
-// `vi-VN` numeric short date dung dau gach ngang; ban thiet ke dung dd/MM nen
-// ghep tay tu cac part thay vi dua vao pattern cua locale.
-const dateParts = new Intl.DateTimeFormat('vi-VN', {
-  day: '2-digit',
-  month: '2-digit',
-  timeZone: TIME_ZONE,
-});
-const formatDayMonth = (value: Date) => {
-  const parts = dateParts.formatToParts(value);
-  const day = parts.find((part) => part.type === 'day')?.value ?? '';
-  const month = parts.find((part) => part.type === 'month')?.value ?? '';
-  return `${day}/${month}`;
-};
-
-/** Nhan thoi gian ngan gon giong ban thiet ke: gio trong ngay, "Hôm qua",
- * "N ngày trước" trong tuan, con lai la dd/MM. */
-const formatNotificationTime = (iso: string) => {
-  const created = new Date(iso);
-  const dayIndex = (value: Date) =>
-    Math.floor(
-      (value.getTime() - value.getTimezoneOffset() * 60_000) / 86_400_000,
-    );
-  const diffDays = dayIndex(new Date()) - dayIndex(created);
-
-  if (diffDays <= 0) return hourFormatter.format(created);
-  if (diffDays === 1) return 'Hôm qua';
-  if (diffDays < 7) return `${diffDays} ngày trước`;
-  return formatDayMonth(created);
 };
 
 const listeners = new Set<() => void>();
@@ -167,53 +109,37 @@ export const useNotifications = () => {
   return { items: itemsWithRead, unreadCount, markAsRead, toggleAllRead, toggleRead };
 };
 
-/** Popover noi dung - dung chung cho ca hover-locked va hover-only. */
+/** Panel luon nen trang + chu toi, ke ca khi header trang chu dang
+ * `text-white`. `isolate` + mau chu tuong minh de khong ke thua mau tu header. */
 const PopoverPanel = ({
   items,
-  transparent,
   close,
   onToggleRead,
 }: {
   items: NotificationItem[];
-  transparent: boolean;
   close: () => void;
   onToggleRead: (id: string) => void;
 }) => {
-  // Cong tac "Chưa đọc": bat thi chi hien muc chua doc, tat thi xem tat ca.
   const router = useRouter();
   const [unreadOnly, setUnreadOnly] = useState(false);
   const visibleItems = useMemo(
     () => (unreadOnly ? items.filter((item) => !item.isRead) : items),
     [items, unreadOnly],
   );
-  // Chi lay 5 muc gan nhat de vua popup. Nguon du lieu day du o trang
-  // /thong-bao (link "Xem them" ben duoi).
   const preview = useMemo(() => visibleItems.slice(0, 5), [visibleItems]);
-
-  const panelClass = transparent
-    ? 'border border-white/20 bg-black/85 backdrop-blur-md text-white'
-    : 'border border-gray-200 bg-white shadow-theme-lg';
-  const dividerClass = transparent ? 'divide-white/10' : 'divide-gray-100';
-  const mutedClass = transparent ? 'text-white/70' : 'text-gray-500';
-  const titleClass = transparent ? 'text-white' : 'text-gray-900';
 
   return (
     <div
       role="dialog"
       aria-label="Thông báo"
-      className={`absolute right-0 top-full z-50 mt-3 w-[400px] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-2xl ${panelClass}`}
+      className="isolate absolute right-0 top-full z-50 mt-3 w-[380px] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-2xl border border-gray-200 bg-white text-gray-900 shadow-theme-lg max-md:fixed max-md:left-3 max-md:right-3 max-md:top-14 max-md:z-[60] max-md:w-auto max-md:max-w-none"
     >
-      {/* Header: tieu de + cong tac "Chưa đọc" (loc danh sach) + dong. */}
-      <div
-        className={`flex items-center justify-between gap-3 border-b px-5 py-4 ${
-          transparent ? 'border-white/10' : 'border-gray-100'
-        }`}
-      >
-        <div className={`text-theme-xl font-bold ${titleClass}`}>Thông báo</div>
+      <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-5 py-4">
+        <div className="text-theme-lg font-bold text-gray-900">Thông báo</div>
 
         <div className="flex items-center gap-3">
           <label className="flex cursor-pointer items-center gap-2">
-            <span className={`text-theme-sm ${mutedClass}`}>
+            <span className="text-theme-sm text-gray-500">
               {unreadOnly ? 'Chưa đọc' : 'Tất cả'}
             </span>
             <input
@@ -225,9 +151,7 @@ const PopoverPanel = ({
             />
             <span
               aria-hidden
-              className={`relative h-6 w-11 shrink-0 rounded-full transition peer-focus-visible:ring-2 peer-focus-visible:ring-brand-300 ${
-                transparent ? 'bg-white/25 peer-checked:bg-white/70' : 'bg-gray-200 peer-checked:bg-brand-500'
-              } after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow-card after:transition-transform peer-checked:after:translate-x-5`}
+              className="relative h-6 w-11 shrink-0 rounded-full bg-gray-200 transition peer-checked:bg-brand-500 peer-focus-visible:ring-2 peer-focus-visible:ring-brand-300 after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow-card after:transition-transform peer-checked:after:translate-x-5"
             />
           </label>
 
@@ -235,43 +159,33 @@ const PopoverPanel = ({
             type="button"
             onClick={close}
             aria-label="Đóng thông báo"
-            className={`inline-flex h-7 w-7 items-center justify-center rounded-full transition ${
-              transparent
-                ? 'text-white/70 hover:bg-white/15 hover:text-white'
-                : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
-            }`}
+            className="inline-flex h-7 w-7 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-100 hover:text-gray-700"
           >
-            <FiX aria-hidden className="h-5 w-5" />
+            <FiX aria-hidden className="h-4 w-4" />
           </button>
         </div>
       </div>
 
-      {/* List */}
       {preview.length === 0 ? (
         <div className="flex flex-col items-center px-6 py-10 text-center">
-          <span
-            className={`inline-flex h-12 w-12 items-center justify-center rounded-full ${
-              transparent ? 'bg-white/10 text-white/70' : 'bg-gray-100 text-gray-400'
-            }`}
-          >
+          <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400">
             <FiInbox aria-hidden className="h-6 w-6" />
           </span>
-          <div className={`mt-3 text-theme-sm font-semibold ${titleClass}`}>
+          <div className="mt-3 text-theme-sm font-semibold text-gray-900">
             {unreadOnly ? 'Không còn thông báo chưa đọc' : 'Chưa có thông báo'}
           </div>
-          <div className={`mt-1 text-theme-xs ${mutedClass}`}>
+          <div className="mt-1 text-theme-xs text-gray-500">
             {unreadOnly
               ? 'Bạn đã đọc hết các thông báo gần đây.'
               : 'Mọi cập nhật sẽ xuất hiện ở đây.'}
           </div>
         </div>
       ) : (
-        <ul className={`max-h-[60vh] divide-y overflow-y-auto ${dividerClass}`}>
+        <ul className="max-h-[min(60vh,420px)] overflow-y-auto">
           {preview.map((item) => (
             <NotificationRow
               key={item.publicId}
               item={item}
-              transparent={transparent}
               onActivate={() => close()}
               onToggleRead={onToggleRead}
             />
@@ -279,112 +193,82 @@ const PopoverPanel = ({
         </ul>
       )}
 
-      {/* Footer */}
       <Link
         href="/thong-bao"
         onClick={() => {
           router.push('/thong-bao');
           close();
         }}
-        className={`block border-t px-4 py-3.5 text-center text-theme-sm font-semibold transition ${
-          transparent
-            ? 'border-white/15 text-white/85 hover:bg-white/10 hover:text-white'
-            : 'border-gray-100 text-brand-500 hover:bg-gray-50 hover:text-brand-600'
-        }`}
+        className="block border-t border-gray-100 px-4 py-3 text-center text-theme-sm font-semibold text-brand-500 transition hover:bg-gray-50 hover:text-brand-600"
       >
-        Xem thêm
+        Xem tất cả
       </Link>
     </div>
   );
 };
 
-/** Mot dong thong bao trong popup. Click vao link se mo href va dong popup.
- * Click vao nut phong bi ben phai se toggle trang thai doc/chua doc ma khong
- * dong popup (dung de user danh la chua doc lai mot muc da doc qua). */
+/** Mot dong: nguon in dam + cau "đã gửi cho bạn một thông báo" chay lien,
+ * tieu de ben duoi, thoi gian mau brand neu chua doc, nut phong bi ben phai. */
 const NotificationRow = ({
   item,
-  transparent,
   onActivate,
   onToggleRead,
 }: {
   item: NotificationItem;
-  transparent: boolean;
   onActivate: () => void;
   onToggleRead: (id: string) => void;
 }) => {
-  // Dong chua doc duoc to nen xanh nhat de noi bat khoi cac dong da doc.
-  const rowBg = item.isRead
-    ? transparent
-      ? 'hover:bg-white/10'
-      : 'bg-white hover:bg-gray-50'
-    : transparent
-      ? 'bg-white/10 hover:bg-white/15'
-      : 'bg-brand-25 hover:bg-brand-50';
-  const avatarClass = transparent ? 'bg-white/15 text-lg' : `${CATEGORY_TONE[item.category]} text-lg`;
-  const bodyClass = transparent ? 'text-white/80' : 'text-gray-700';
-  const nameClass = transparent ? 'text-white' : 'text-gray-900';
-  const timeClass = item.isRead
-    ? transparent
-      ? 'text-white/50'
-      : 'text-gray-400'
-    : transparent
-      ? 'text-white'
-      : 'text-brand-500';
-  // Chua doc: phong bi dam tren nen xanh. Da doc: vong tron trang vien xam
-  // + icon hop thu mo (SVG mau).
-  const mailClass = item.isRead
-    ? transparent
-      ? 'border border-white/35 bg-white/10 text-white/70'
-      : 'border border-gray-200 bg-white text-gray-400'
-    : transparent
-      ? 'border border-transparent bg-white/25 text-white'
-      : 'border border-transparent bg-brand-50 text-brand-500';
   const MailIcon = item.isRead ? OpenMailboxIcon : HiMail;
 
   return (
-    <li className="relative">
+    <li
+      className={`relative border-b border-gray-100 last:border-b-0 ${
+        item.isRead ? 'bg-white hover:bg-gray-50' : 'bg-brand-25 hover:bg-brand-50'
+      }`}
+    >
       <Link
         href={item.href}
         onClick={onActivate}
-        className={`flex items-center gap-3 py-3 pl-4 pr-16 transition ${rowBg}`}
+        className="block py-3 pl-4 pr-12"
       >
-        {/* Icon loai thong bao: chat / tui tien / can cau / bao */}
-        <span
-          aria-hidden
-          className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${avatarClass}`}
+        <p
+          className={`text-theme-sm leading-snug ${
+            item.isRead ? 'text-gray-600' : 'text-gray-800'
+          }`}
         >
-          {item.icon}
-        </span>
-
-        {/* Noi dung */}
-        <div className="min-w-0 flex-1">
-          <p className={`line-clamp-2 text-theme-sm leading-snug ${bodyClass}`}>
-            <span className={`font-bold ${nameClass}`}>{item.source}</span>{' '}
-            đã gửi cho bạn một thông báo
-          </p>
-          <p className={`mt-0.5 line-clamp-1 text-theme-sm leading-snug ${bodyClass}`}>
-            {item.title}
-          </p>
-          {/* Nhan thoi gian phu thuoc vao "hom nay" nen server va client co the
-           * render lech nhau vai giay - bo qua canh bao hydrate cho rieng no. */}
-          <time
-            dateTime={item.createdAt}
-            suppressHydrationWarning
-            className={`mt-1 block text-theme-xs ${timeClass}`}
-          >
-            {formatNotificationTime(item.createdAt)}
-          </time>
-        </div>
+          <span className={`font-bold ${item.isRead ? 'text-gray-800' : 'text-gray-900'}`}>
+            {item.source}
+          </span>{' '}
+          đã gửi cho bạn một thông báo
+        </p>
+        <p
+          className={`mt-0.5 line-clamp-1 text-theme-sm leading-snug ${
+            item.isRead ? 'text-gray-500' : 'text-gray-700'
+          }`}
+        >
+          {item.title}
+        </p>
+        <time
+          dateTime={item.createdAt}
+          suppressHydrationWarning
+          className={`mt-1 block text-theme-xs ${
+            item.isRead ? 'text-gray-400' : 'font-semibold text-brand-500'
+          }`}
+        >
+          {formatNotificationTime(item.createdAt)}
+        </time>
       </Link>
 
-      {/* Nut phong bi: doi trang thai doc/chua doc ma khong dieu huong. Dat
-       * ngoai Link de click khong bi Link nuot mat. */}
       <button
         type="button"
         onClick={() => onToggleRead(item.publicId)}
         aria-label={item.isRead ? 'Đánh dấu chưa đọc' : 'Đánh dấu đã đọc'}
         aria-pressed={!item.isRead}
-        className={`absolute right-4 top-1/2 inline-flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full transition hover:brightness-95 ${mailClass}`}
+        className={`absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full transition ${
+          item.isRead
+            ? 'text-gray-300 hover:bg-gray-100 hover:text-gray-500'
+            : 'text-brand-500 hover:bg-brand-100'
+        }`}
       >
         <MailIcon aria-hidden className="h-[18px] w-[18px]" />
       </button>
@@ -392,18 +276,23 @@ const NotificationRow = ({
   );
 };
 
-const NotificationsPopover = ({ variant, iconClass }: NotificationsPopoverProps) => {
+/** Chuot that (desktop) moi dung hover. Dien thoai/iPad tao mouseenter/leave
+ * gia khi tap — neu van listen se mo roi dong ngay, nut chuong "khong an". */
+const canHoverOpen = () =>
+  typeof window !== 'undefined' &&
+  window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+const NotificationsPopover = ({ iconClass }: NotificationsPopoverProps) => {
   const pathname = usePathname();
   const { items, unreadCount, toggleRead } = useNotifications();
   const [isOpen, setIsOpen] = useState(false);
-  const isClickLocked = useRef(false);
+  const openedByClick = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
   // Timer de mo/dong co delay - tranh popup nhap nhay khi user chi luot
   // chuot ngang icon, va cho user kip di chuyen tu icon xuong panel qua
   // khoang gap giua button va dropdown.
   const openTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const transparent = variant === 'transparent';
 
   const cancelTimers = useCallback(() => {
     if (openTimerRef.current) {
@@ -418,13 +307,12 @@ const NotificationsPopover = ({ variant, iconClass }: NotificationsPopoverProps)
 
   const close = useCallback(() => {
     cancelTimers();
+    openedByClick.current = false;
     setIsOpen(false);
-    isClickLocked.current = false;
   }, [cancelTimers]);
 
-  // Hover: sau 100ms moi mo - dam bao user that su muon xem, khong phai
-  // luot chuot ngang. Neu user bo di truoc khi timer chay thi huy.
   const onMouseEnter = () => {
+    if (!canHoverOpen() || openedByClick.current) return;
     if (closeTimerRef.current) {
       clearTimeout(closeTimerRef.current);
       closeTimerRef.current = null;
@@ -436,18 +324,12 @@ const NotificationsPopover = ({ variant, iconClass }: NotificationsPopoverProps)
       }, 100);
     }
   };
-  // Mouse leave: sau 200ms moi dong - du thoi gian di chuyen chuot tu icon
-  // xuong panel (qua khoang gap `mt-3` giua button va dropdown). Khi da
-  // khoa (user da click) thi dong ngay, khong can doi.
+
   const onMouseLeave = () => {
+    if (!canHoverOpen() || openedByClick.current) return;
     if (openTimerRef.current) {
       clearTimeout(openTimerRef.current);
       openTimerRef.current = null;
-    }
-    if (isClickLocked.current) {
-      setIsOpen(false);
-      isClickLocked.current = false;
-      return;
     }
     if (isOpen && !closeTimerRef.current) {
       closeTimerRef.current = setTimeout(() => {
@@ -457,12 +339,12 @@ const NotificationsPopover = ({ variant, iconClass }: NotificationsPopoverProps)
     }
   };
 
-  // Click vao nut chuong de mo/khoa. Click khi dang mo -> mo khoa + dong.
   const onToggleClick = () => {
     cancelTimers();
     setIsOpen((open) => {
-      isClickLocked.current = !open;
-      return !open;
+      const next = !open;
+      openedByClick.current = next;
+      return next;
     });
   };
 
@@ -488,7 +370,7 @@ const NotificationsPopover = ({ variant, iconClass }: NotificationsPopoverProps)
   // nay cung xuat hien o userStore.ts (line 85) va FavoriteList.tsx trong
   // cung codebase.
   useEffect(() => {
-    isClickLocked.current = false;
+    openedByClick.current = false;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsOpen(false);
   }, [pathname]);
@@ -503,7 +385,7 @@ const NotificationsPopover = ({ variant, iconClass }: NotificationsPopoverProps)
   return (
     <div
       ref={containerRef}
-      className="relative hidden items-center xl:flex"
+      className="relative flex items-center"
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
@@ -517,7 +399,7 @@ const NotificationsPopover = ({ variant, iconClass }: NotificationsPopoverProps)
         aria-expanded={isOpen}
         className={`relative flex h-9 w-9 items-center justify-center rounded-full transition ${iconClass}`}
       >
-        <FiBell aria-hidden className="text-xl" />
+        <FiBell aria-hidden className="h-5 w-5" />
         {showBadge && (
           <span
             aria-hidden
@@ -529,12 +411,7 @@ const NotificationsPopover = ({ variant, iconClass }: NotificationsPopoverProps)
       </button>
 
       {isOpen && (
-        <PopoverPanel
-          items={items}
-          transparent={transparent}
-          close={close}
-          onToggleRead={toggleRead}
-        />
+        <PopoverPanel items={items} close={close} onToggleRead={toggleRead} />
       )}
     </div>
   );

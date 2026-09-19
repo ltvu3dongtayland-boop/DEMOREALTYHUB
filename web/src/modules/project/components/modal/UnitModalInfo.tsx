@@ -42,22 +42,22 @@ export default function PropertyDetailCard() {
           </button>
         </div>
 
-        <div className="bg-slate-50/80 p-2.5 rounded-lg grid grid-cols-2 gap-y-1.5 gap-x-2 text-xs">
-          <div className="flex justify-between items-center pr-2 border-r border-slate-200">
-            <span className="text-slate-500">Giá vay:</span>
-            <span className="font-semibold text-slate-800">Đang cập nhật</span>
+        <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 rounded-lg bg-slate-50/80 p-2.5 text-xs max-md:grid-cols-1 max-md:gap-2">
+          <div className="flex items-center justify-between gap-2 border-r border-slate-200 pr-2 max-md:border-r-0 max-md:pr-0">
+            <span className="shrink-0 text-slate-500">Giá vay</span>
+            <span className="text-right font-semibold text-slate-800">Đang cập nhật</span>
           </div>
-          <div className="flex justify-between items-center pl-1">
-            <span className="text-slate-500">Giá TTTĐ:</span>
-            <span className="font-bold text-slate-900">2.97 tỷ</span>
+          <div className="flex items-center justify-between gap-2 pl-1 max-md:pl-0">
+            <span className="shrink-0 text-slate-500">Giá TTTĐ</span>
+            <span className="text-right font-bold text-slate-900">2.97 tỷ</span>
           </div>
-          <div className="flex justify-between items-center pr-2 border-r border-slate-200">
-            <span className="text-slate-500">Giá TTS:</span>
-            <span className="font-semibold text-slate-800">Đang cập nhật</span>
+          <div className="flex items-center justify-between gap-2 border-r border-slate-200 pr-2 max-md:border-r-0 max-md:pr-0">
+            <span className="shrink-0 text-slate-500">Giá TTS</span>
+            <span className="text-right font-semibold text-slate-800">Đang cập nhật</span>
           </div>
-          <div className="flex justify-between items-center pl-1">
-            <span className="text-slate-500">Đơn giá:</span>
-            <span className="font-bold text-slate-900">54.92 triệu/m²</span>
+          <div className="flex items-center justify-between gap-2 pl-1 max-md:pl-0">
+            <span className="shrink-0 text-slate-500">Đơn giá</span>
+            <span className="text-right font-bold text-slate-900">54.92 triệu/m²</span>
           </div>
         </div>
       </div>

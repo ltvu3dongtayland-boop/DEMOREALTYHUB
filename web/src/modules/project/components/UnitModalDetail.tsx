@@ -99,7 +99,7 @@ const UnitModalDetail = ({
   onMessageAdvisor,
 }: UnitModalDetailProps) => {
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
       {/* ── Header (cố định phía trên) ─────────────────────────── */}
       <div className="shrink-0">
         <UnitModalHeader
@@ -128,12 +128,10 @@ const UnitModalDetail = ({
         />
       </div>
 
-      {/* ── Content (scrollable) ──────────────────────────────── */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* ── Left side: Gallery + Advisor ────────────────────── */}
-        <div className="flex w-1/2 shrink-0 flex-col overflow-hidden border-r border-gray-200">
-          {/* Gallery - phía trên bên trái */}
-          <div className="flex-1 overflow-hidden pt-2 pr-1">
+      {/* ── Content: iPad/desktop 2 cot nhu cu, mobile xep 1 cot ── */}
+      <div className="flex min-h-0 flex-1 overflow-hidden max-md:flex-col max-md:overflow-y-auto">
+        <div className="flex w-1/2 shrink-0 flex-col overflow-hidden border-r border-gray-200 max-md:w-full max-md:border-r-0">
+          <div className="flex-1 overflow-hidden pt-2 pr-1 max-md:overflow-visible max-md:pr-0 max-md:pt-3">
             <UnitModalGallery
               images={images}
               alt={imageAlt}
@@ -150,14 +148,13 @@ const UnitModalDetail = ({
           </div>
         </div>
 
-        {/* ── Right side: Info (scrollable) ─────────────────────── */}
-        <div className="w-1/2 overflow-y-auto pt-2 pl-1">
+        <div className="w-1/2 overflow-y-auto pt-2 pl-1 max-md:w-full max-md:overflow-visible max-md:pl-0 max-md:pb-3">
           <UnitModalInfo />
         </div>
       </div>
 
       {/* ── Footer (cố định phía dưới) ─────────────────────────── */}
-      <UnitModalBottom />
+      <UnitModalBottom onShare={onShare} />
     </div>
   );
 };

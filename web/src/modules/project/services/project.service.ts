@@ -157,6 +157,26 @@ export const ProjectService = {
   },
 
   /**
+   * Lay quy can theo publicId - dung trang /yeu-thich tab Quỹ căn.
+   * Giu thu tu ids de card dung "vua luu" (moi nhat truoc).
+   *
+   * KHI CO BACKEND: GET /units/by-ids?ids=a,b,c
+   */
+  unitsByIds: async (publicIds: string[]): Promise<UnitWithProject[]> => {
+    if (publicIds.length === 0) return [];
+    const idSet = new Set(publicIds);
+    const found = getAllUnitsAcrossProjects().filter((unit) =>
+      idSet.has(unit.publicId),
+    );
+    const byId = new Map(found.map((unit) => [unit.publicId, unit]));
+    return delay(
+      publicIds
+        .map((id) => byId.get(id))
+        .filter((unit): unit is UnitWithProject => Boolean(unit)),
+    );
+  },
+
+  /**
    * Danh sach du an da loc + phan trang
    */
   list: async (query: ProjectQuery): Promise<PaginatedProjects> => {

@@ -6,7 +6,6 @@ import { usePathname, useRouter } from '@/i18n/navigation';
 import { useLocale } from 'next-intl';
 import type { Locale } from '@/i18n/config';
 import { localeLabels, locales } from '@/i18n/config';
-import { FiChevronDown, FiGlobe } from 'react-icons/fi';
 
 /**
  * Language switcher (dropdown).
@@ -147,7 +146,7 @@ export default function LanguageSwitcher({
       aria-label="Language switcher"
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      className={`relative hidden items-center xl:flex ${className}`}
+      className={`relative flex items-center ${className}`}
     >
       <button
         type="button"
@@ -159,7 +158,9 @@ export default function LanguageSwitcher({
           isOpen ? 'bg-gray-100' : ''
         } ${isPending ? 'opacity-60' : ''}`}
       >
-        <FiGlobe aria-hidden className="h-4 w-4" />
+        <span aria-hidden className="text-theme-sm font-bold uppercase">
+          {currentLocale}
+        </span>
       </button>
 
       {isOpen && (

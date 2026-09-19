@@ -939,7 +939,17 @@ const BLANCA_CITY_UNIT_TYPES = [
   { label: '3PN', area: 93.1, bedrooms: 3 },
 ];
 
-const BLANCA_CITY_DIRECTIONS = ['ĐÔNG', 'TÂY', 'NAM', 'ĐÔNG NAM', 'TÂY NAM'];
+// Du 8 huong de bo loc Dong/Tay Tu Trach luon co ket qua o moi du an
+const BLANCA_CITY_DIRECTIONS = [
+  'ĐÔNG',
+  'ĐÔNG NAM',
+  'NAM',
+  'BẮC',
+  'TÂY',
+  'TÂY NAM',
+  'TÂY BẮC',
+  'ĐÔNG BẮC',
+];
 
 const buildBlancaCityUnits = (): ProjectUnit[] => {
   const units: ProjectUnit[] = [];
@@ -1018,7 +1028,16 @@ const IMPERIA_UNIT_TYPES = [
   { label: 'Penthouse', area: 156, bedrooms: 4 },
 ];
 
-const IMPERIA_DIRECTIONS = ['ĐÔNG', 'TÂY', 'NAM', 'BẮC', 'ĐÔNG NAM', 'TÂY NAM'];
+const IMPERIA_DIRECTIONS = [
+  'ĐÔNG',
+  'ĐÔNG NAM',
+  'NAM',
+  'BẮC',
+  'TÂY',
+  'TÂY NAM',
+  'TÂY BẮC',
+  'ĐÔNG BẮC',
+];
 
 const buildImperiaUnits = (): ProjectUnit[] => {
   const units: ProjectUnit[] = [];

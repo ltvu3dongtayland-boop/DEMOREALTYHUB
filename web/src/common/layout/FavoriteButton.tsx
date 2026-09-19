@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { FaHeart } from 'react-icons/fa';
+import { FiHeart } from 'react-icons/fi';
 
 import { useFavorites } from '@/common/hooks/useFavorites';
+import { useFavoriteUnits } from '@/common/hooks/useFavoriteUnits';
 
 type FavoriteButtonProps = {
   /** Color classes cho icon khi header o trang thai transparent / solid. */
@@ -16,8 +17,10 @@ type FavoriteButtonProps = {
 };
 
 const FavoriteButton = ({ iconClass, wrapperClassName }: FavoriteButtonProps) => {
-  const { favorites, isHydrated } = useFavorites();
-  const count = favorites.length;
+  const { favorites: projects, isHydrated: projectsHydrated } = useFavorites();
+  const { favorites: units, isHydrated: unitsHydrated } = useFavoriteUnits();
+  const isHydrated = projectsHydrated && unitsHydrated;
+  const count = projects.length + units.length;
 
   const showBadge = isHydrated && count > 0;
   const badgeText = count > 99 ? '99+' : String(count);
@@ -27,13 +30,13 @@ const FavoriteButton = ({ iconClass, wrapperClassName }: FavoriteButtonProps) =>
       href="/yeu-thich"
       aria-label={
         showBadge
-          ? `Yêu thích - ${count} dự án đã lưu`
+          ? `Yêu thích - ${count} mục đã lưu`
           : 'Yêu thích'
       }
       data-clean-hide="utility-link"
       className={`relative flex h-9 w-9 items-center justify-center rounded-full transition ${iconClass} ${wrapperClassName ?? ''}`.trim()}
     >
-      <FaHeart aria-hidden className="h-[18px] w-[18px]" />
+      <FiHeart aria-hidden className="h-5 w-5" />
       {showBadge && (
         <span
           aria-hidden

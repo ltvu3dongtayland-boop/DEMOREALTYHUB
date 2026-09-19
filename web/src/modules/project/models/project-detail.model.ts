@@ -317,9 +317,9 @@ export const DIRECTION_GROUPS = {
 } as const;
 
 export const DIRECTION_FILTER_OPTIONS: { value: string; label: string }[] = [
-  ...COMPASS_DIRECTIONS.map((name) => ({ value: name, label: name })),
   { value: 'dong-tu-trach', label: 'ĐÔNG TỨ TRẠCH' },
   { value: 'tay-tu-trach', label: 'TÂY TỨ TRẠCH' },
+  ...COMPASS_DIRECTIONS.map((name) => ({ value: name, label: name })),
 ];
 
 const normalizeDirection = (value: string) => value.trim().toLocaleUpperCase('vi');

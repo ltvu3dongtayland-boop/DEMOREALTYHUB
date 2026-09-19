@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { FiPhone, FiMessageSquare } from 'react-icons/fi';
+import { FiPhone } from 'react-icons/fi';
 
 interface Advisor {
   id: string | number;
@@ -52,20 +52,19 @@ const UnitModalAdvisor = ({
   const displayAdvisors = advisors.slice(0, 3);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 max-md:flex max-md:overflow-x-auto max-md:pb-1">
       {displayAdvisors.map((advisor) => (
         <div
           key={advisor.id}
-          className="bg-gradient-to-b from-blue-50/40 to-slate-50/80 border border-blue-100/80 rounded-2xl p-3 flex items-center gap-3 shadow-2xs hover:shadow-xs transition-shadow"
+          className="flex items-center gap-3 rounded-2xl border border-blue-100/80 bg-gradient-to-b from-blue-50/40 to-slate-50/80 p-3 shadow-2xs transition-shadow hover:shadow-xs max-md:min-w-[210px]"
         >
-          {/* Avatar + Name */}
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="flex flex-col items-center gap-1">
-              <h4 className="font-bold text-slate-900 text-xs" title={advisor.name}>
+          <div className="flex shrink-0 items-center gap-3">
+            <div className="flex flex-col items-center gap-1 max-md:items-start">
+              <h4 className="text-xs font-bold text-slate-900" title={advisor.name}>
                 {advisor.name}
               </h4>
               {advisor.role && (
-                <span className="text-[10px] text-blue-600 font-medium">
+                <span className="text-[10px] font-medium text-blue-600">
                   {advisor.role}
                 </span>
               )}
@@ -73,23 +72,20 @@ const UnitModalAdvisor = ({
                 <img
                   src={advisor.avatar}
                   alt={advisor.name}
-                  className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-2xs"
+                  className="h-12 w-12 rounded-full object-cover border-2 border-white shadow-2xs"
                 />
-                {/* Nút Gọi thoại */}
                 <button
                   type="button"
                   onClick={() => onCall ? onCall(advisor) : window.open(`tel:${advisor.phone}`)}
-                  className="w-9 h-9 rounded-lg bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white flex items-center justify-center transition-all shadow-xs"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500 text-white shadow-xs transition-all hover:bg-emerald-600 active:scale-95"
                   title="Gọi điện"
                 >
-                  <FiPhone className="w-4 h-4 fill-white" />
+                  <FiPhone className="h-4 w-4 fill-white" />
                 </button>
-
-                {/* Nút Nhắn tin */}
                 <button
                   type="button"
                   onClick={() => onMessage && onMessage(advisor)}
-                  className="w-12 h-12 left-[-5px] rounded-lg active:scale-95 text-white flex items-center justify-center transition-all"
+                  className="flex h-12 w-12 items-center justify-center rounded-lg transition-all active:scale-95"
                   title="Nhắn tin"
                 >
                   <Image src="/images/logo-zalo.webp" alt="Zalo" width={32} height={32} />

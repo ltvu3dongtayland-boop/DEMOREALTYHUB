@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { FiMapPin, FiHome, FiMaximize, FiCompass, FiLayers, FiHeart } from "react-icons/fi";
 import ThumbCarousel from "@/common/components/ThumbCarousel";
+import { useFavoriteUnits } from "@/common/hooks/useFavoriteUnits";
 import { formatBillion } from "@/common/utils/format";
 import type { UnitWithProject } from "@/modules/project/models/project-detail.model";
 
@@ -20,6 +21,8 @@ type UnitCardProps = {
 const UnitCard = ({ unit, onUnitClick }: UnitCardProps) => {
   const detailHref = `/du-an/${unit.projectSlug}?tab=quy-can`;
   const isInteractive = Boolean(onUnitClick);
+  const { isFavorite, toggle } = useFavoriteUnits();
+  const saved = isFavorite(unit.publicId);
 
   // Ro chuot len the thi dung chuyen anh, de con kip nhin tam dang xem
   const [isHovered, setIsHovered] = useState(false);
@@ -102,16 +105,18 @@ const UnitCard = ({ unit, onUnitClick }: UnitCardProps) => {
           {/* Icon trai tim (goc tren phai) */}
           <button
             type="button"
-            aria-label="Yêu thích"
-            className="absolute right-2 top-2 z-10 rounded-full bg-white/90 p-2 shadow-sm transition hover:bg-white hover:scale-110"
+            aria-label={saved ? "Bỏ yêu thích quỹ căn" : "Yêu thích quỹ căn"}
+            aria-pressed={saved}
+            className={`absolute right-2 top-2 z-10 rounded-full p-2 shadow-sm transition hover:scale-110 ${
+              saved ? "bg-error-50 text-error-500" : "bg-white/90 text-error-500 hover:bg-white"
+            }`}
             onClick={(event) => {
-              // Chan ca mac dinh (Link navigate neu co) lan bubble de click
-              // chi toggle favorite ma khong nhay trang / khong mo modal.
               event.preventDefault();
               event.stopPropagation();
+              toggle(unit.publicId);
             }}
           >
-            <FiHeart className="h-5 w-5 text-error-500" />
+            <FiHeart className={`h-5 w-5 ${saved ? "fill-current" : ""}`} />
           </button>
         </Wrapper>
 

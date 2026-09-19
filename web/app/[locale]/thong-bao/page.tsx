@@ -1,9 +1,7 @@
-import Image from 'next/image';
 import Link from 'next/link';
 
 import {
   FiArrowRight,
-  FiBell,
   FiCheck,
   FiHelpCircle,
   FiMail,
@@ -25,7 +23,6 @@ import {
  * Trang /thong-bao - Trung tam thong bao cua toi.
  *
  * Layout (server component + 1 client feed):
- *   01 Page header (gradient navy -> indigo, breadcrumb + page title + bell icon)
  *   02 Main grid (feed 3 col + sidebar settings 1 col)
  *   03 CTA (lien he support)
  *
@@ -43,75 +40,6 @@ export const metadata: Metadata = {
 
 const ThongBaoPage = () => (
   <main className="bg-white">
-    {/* ============ 01 PAGE HEADER ============ */}
-    <section className="relative isolate overflow-hidden bg-gray-900 py-12 text-white md:py-16">
-      <div aria-hidden className="absolute inset-0 -z-10">
-        <Image
-          src="/images/heroes/thong-bao.jpg"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/92 via-brand-950/88 to-indigo-950/92" />
-      </div>
-      <div
-        aria-hidden
-        className="absolute inset-0 opacity-20"
-        style={{
-          backgroundImage:
-            'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)',
-          backgroundSize: '32px 32px',
-        }}
-      />
-
-      <div className="site-container relative">
-        <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-          <div className="flex-1">
-            <nav aria-label="Breadcrumb" className="mb-4">
-              <ol className="flex items-center gap-2 text-theme-xs text-white/60">
-                <li>
-                  <Link href="/" className="transition hover:text-white">
-                    Trang chủ
-                  </Link>
-                </li>
-                <li aria-hidden>/</li>
-                <li>
-                  <Link href="/tai-khoan" className="transition hover:text-white">
-                    Tài khoản
-                  </Link>
-                </li>
-                <li aria-hidden>/</li>
-                <li className="text-white/90">Thông báo</li>
-              </ol>
-            </nav>
-
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-1.5 text-theme-xs font-semibold uppercase tracking-[0.2em] text-white backdrop-blur-sm">
-              <FiBell aria-hidden className="h-3.5 w-3.5" />
-              Trung tâm thông báo
-            </span>
-
-            <h1 className="mt-5 font-serif text-3xl font-light leading-tight md:text-4xl lg:text-5xl">
-              Thông báo
-              <span className="font-bold text-indigo-400"> của tôi</span>
-            </h1>
-
-            <p className="mt-3 max-w-xl text-base leading-relaxed text-white/80 md:text-lg">
-              Mọi cập nhật về dự án quan tâm, phản hồi môi giới và tin tức thị trường — tập trung tại một nơi.
-            </p>
-          </div>
-
-          <span
-            aria-hidden
-            className="inline-flex h-20 w-20 items-center justify-center rounded-3xl bg-indigo-500/20 text-indigo-300 backdrop-blur-sm md:h-24 md:w-24"
-          >
-            <FiBell className="h-10 w-10 md:h-12 md:w-12" />
-          </span>
-        </div>
-      </div>
-    </section>
-
     {/* ============ 02 MAIN GRID ============ */}
     <section className="site-container py-10 md:py-14">
       <div className="grid gap-8 lg:grid-cols-4 lg:gap-10">
@@ -177,18 +105,6 @@ const ThongBaoPage = () => (
                   </li>
                 ))}
               </ul>
-            </div>
-
-            {/* Tip card */}
-            <div className="rounded-2xl border border-gray-100 bg-gray-50/50 p-6">
-              <p className="text-theme-xs font-semibold uppercase tracking-[0.15em] text-gray-500">
-                Mẹo
-              </p>
-              <p className="mt-2 text-theme-sm leading-relaxed text-gray-700">
-                Tick vào{' '}
-                <span className="font-semibold">checkbox</span> bên trái mỗi thông báo để chọn
-                nhiều rồi đánh dấu đã đọc hoặc xoá hàng loạt.
-              </p>
             </div>
           </div>
         </aside>

@@ -6,8 +6,6 @@ import {
   FiMaximize,
   FiCopy,
   FiFileText,
-  FiShare2,
-  FiMoreHorizontal,
 } from "react-icons/fi";
 
 type UnitModalHeaderBottomProps = {
@@ -56,12 +54,8 @@ const UnitModalHeaderBottom = ({
 }: UnitModalHeaderBottomProps) => {
   return (
     <div className="border-b border-gray-200 py-2">
-      {/* Container chính: flex + wrap để responsive, items-stretch để equal height */}
-      <div className="flex flex-wrap items-stretch gap-2">
-        {/* ── Nhóm thông tin (chỉ hiển thị) ──────────────────────── */}
-        {/* Mỗi ô info: flex-col để icon + text xếp dọc, stretch để equal height */}
-        {/* Loại hình */}
-        <div className="flex min-w-[120px] flex-1 items-center gap-2 rounded-lg border border-brand-200 bg-white px-3 py-2">
+      <div className="flex flex-wrap items-stretch gap-2 max-md:grid max-md:grid-cols-2">
+        <div className="flex min-w-[120px] flex-1 items-center gap-2 rounded-lg border border-brand-200 bg-white px-3 py-2 max-md:min-w-0">
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-brand-500 text-white">
             <FiHome className="h-4 w-4" />
           </span>
@@ -73,8 +67,7 @@ const UnitModalHeaderBottom = ({
           </div>
         </div>
 
-        {/* Hướng */}
-        <div className="flex min-w-[120px] flex-1 items-center gap-2 rounded-lg border border-brand-200 bg-white px-3 py-2">
+        <div className="flex min-w-[120px] flex-1 items-center gap-2 rounded-lg border border-brand-200 bg-white px-3 py-2 max-md:min-w-0">
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-500 text-white">
             <FiCompass className="h-4 w-4" />
           </span>
@@ -86,8 +79,7 @@ const UnitModalHeaderBottom = ({
           </div>
         </div>
 
-        {/* Diện tích */}
-        <div className="flex min-w-[120px] flex-1 items-center gap-2 rounded-lg border border-brand-200 bg-white px-3 py-2">
+        <div className="flex min-w-[120px] flex-1 items-center gap-2 rounded-lg border border-brand-200 bg-white px-3 py-2 max-md:min-w-0">
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-brand-500 bg-white text-brand-500">
             <FiMaximize className="h-4 w-4" />
           </span>
@@ -99,25 +91,22 @@ const UnitModalHeaderBottom = ({
           </div>
         </div>
 
-        {/* ── Nhóm hành động chính ───────────────────────────────── */}
-        {/* So sánh căn */}
         <button
           type="button"
           onClick={onCompareUnit}
-          className="flex min-w-[130px] flex-1 items-center justify-center gap-2 rounded-lg bg-brand-500 px-3 py-2 text-xs md:text-sm font-medium text-white shadow-sm transition hover:bg-brand-600"
+          className="flex min-w-[130px] flex-1 items-center justify-center gap-2 rounded-lg bg-brand-500 px-3 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-brand-600 max-md:min-w-0 max-md:text-xs"
         >
-          <FiCopy className="h-4 w-4" />
-          <span>So sánh<br />căn</span>
+          <FiCopy className="h-4 w-4 shrink-0" />
+          <span>So sánh căn</span>
         </button>
 
-        {/* So sánh chính sách */}
         <button
           type="button"
           onClick={onComparePolicy}
-          className="flex min-w-[150px] flex-1 items-center justify-center gap-2 rounded-lg bg-brand-500 px-3 py-2 text-xs md:text-sm font-medium text-white shadow-sm transition hover:bg-brand-600"
+          className="flex min-w-[150px] flex-1 items-center justify-center gap-2 rounded-lg bg-brand-500 px-3 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-brand-600 max-md:col-span-2 max-md:min-w-0 max-md:text-xs"
         >
-          <FiFileText className="h-4 w-4" />
-          <span>So sánh<br />chính sách</span>
+          <FiFileText className="h-4 w-4 shrink-0" />
+          <span>So sánh chính sách</span>
         </button>
       </div>
     </div>

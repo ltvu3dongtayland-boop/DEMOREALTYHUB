@@ -15,11 +15,15 @@ import {
   useFavorites,
   type FavoriteEntry,
 } from '@/common/hooks/useFavorites';
+import { useFavoriteUnits } from '@/common/hooks/useFavoriteUnits';
 import type {
   Project,
   ProjectSegment,
 } from '@/modules/project/models/project.model';
+import type { UnitWithProject } from '@/modules/project/models/project-detail.model';
 import ProjectCard from './ProjectCard';
+import UnitCard from './UnitCard';
+import UnitModal from './UnitModal';
 
 /**
  * Trang /yeu-thich - grid cac du an user da bookmark, co filter + sort.
@@ -48,6 +52,7 @@ const SEGMENT_FILTER_LABELS: Record<ProjectSegment, string> = {
   'thap-tang': 'Thấp tầng',
 };
 
+type FavoriteTab = 'projects' | 'units';
 type SegmentFilter = 'all' | ProjectSegment;
 type SortKey = 'saved-desc' | 'name-asc' | 'segment';
 
@@ -59,11 +64,20 @@ const SORT_LABELS: Record<SortKey, string> = {
 
 const FavoriteList = () => {
   const { favorites, isHydrated, clearAll } = useFavorites();
+  const {
+    favorites: unitFavorites,
+    isHydrated: unitsHydrated,
+    clearAll: clearAllUnits,
+  } = useFavoriteUnits();
+  const [tab, setTab] = useState<FavoriteTab>('projects');
   const [projects, setProjects] = useState<Project[]>([]);
+  const [units, setUnits] = useState<UnitWithProject[]>([]);
+  const [selectedUnit, setSelectedUnit] = useState<UnitWithProject | null>(null);
   const [savedAtMap, setSavedAtMap] = useState<Map<string, number>>(
     () => new Map(),
   );
   const [isLoading, setIsLoading] = useState(false);
+  const [isUnitsLoading, setIsUnitsLoading] = useState(false);
 
   // UI state (filter + sort + share modal)
   const [segmentFilter, setSegmentFilter] = useState<SegmentFilter>('all');
@@ -110,6 +124,31 @@ const FavoriteList = () => {
       cancelled = true;
     };
   }, [favorites, isHydrated]);
+
+  useEffect(() => {
+    if (!unitsHydrated) return;
+    if (unitFavorites.length === 0) {
+      setUnits([]);
+      return;
+    }
+
+    let cancelled = false;
+    setIsUnitsLoading(true);
+
+    import('../services/project.service').then(({ ProjectService }) => {
+      ProjectService.unitsByIds(unitFavorites.map((entry) => entry.publicId)).then(
+        (list) => {
+          if (cancelled) return;
+          setUnits(list);
+          setIsUnitsLoading(false);
+        },
+      );
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [unitFavorites, unitsHydrated]);
 
   // Filter + sort client-side. Re-compute khi projects / filter / sortKey doi.
   // Luon sort TRUOC roi filter moi dung, hoac nguoc lai deu OK vi <100 items.
@@ -162,39 +201,100 @@ const FavoriteList = () => {
     );
   }, [favorites]);
 
+  const mostRecentUnitSavedAt = useMemo(() => {
+    if (unitFavorites.length === 0) return null;
+    return unitFavorites.reduce((max, entry) => Math.max(max, entry.savedAt), 0);
+  }, [unitFavorites]);
+
   const handleCopyShare = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
       setShareCopied(true);
       window.setTimeout(() => setShareCopied(false), 2000);
     } catch {
-      // Clipboard API that bai (trinh duyet cu, http) -> fallback select URL.
       window.prompt('Sao chép liên kết:', window.location.href);
     }
   };
 
   const handleClearAll = () => {
-    clearAll();
+    if (tab === 'units') {
+      clearAllUnits();
+    } else {
+      clearAll();
+    }
     setShowClearConfirm(false);
   };
 
   return (
     <>
-      {/* Header trang */}
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold uppercase tracking-wide text-gray-900 md:text-3xl">
-            Dự án yêu thích
-          </h1>
-          <p className="mt-1 text-theme-sm text-gray-500">
-            Danh sách các dự án bạn đã lưu để theo dõi và so sánh.
-          </p>
-          {mostRecentSavedAt && (
-            <p className="mt-1.5 text-theme-xs text-gray-400">
-              Lưu gần nhất: {formatRelativeSaved(mostRecentSavedAt)}
-            </p>
+      <div className="mb-5">
+        <h1 className="text-2xl font-bold uppercase tracking-wide text-gray-900 md:text-3xl">
+          Yêu thích
+        </h1>
+        <p className="mt-1 text-theme-sm text-gray-500">
+          Dự án và quỹ căn bạn đã lưu để theo dõi, so sánh.
+        </p>
+      </div>
+
+      <div
+        role="tablist"
+        aria-label="Loại yêu thích"
+        className="mb-6 grid grid-cols-2 gap-1 rounded-2xl border border-gray-200 bg-gray-50 p-1"
+      >
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === 'projects'}
+          onClick={() => {
+            setTab('projects');
+            setShowClearConfirm(false);
+          }}
+          className={`rounded-xl px-3 py-2.5 text-theme-sm font-semibold transition ${
+            tab === 'projects'
+              ? 'bg-white text-brand-600 shadow-theme-xs'
+              : 'text-gray-500 hover:text-gray-800'
+          }`}
+        >
+          Dự án
+          {isHydrated && (
+            <span className="ml-1.5 text-theme-xs font-bold text-gray-400">
+              {favorites.length}
+            </span>
           )}
-        </div>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === 'units'}
+          onClick={() => {
+            setTab('units');
+            setShowClearConfirm(false);
+          }}
+          className={`rounded-xl px-3 py-2.5 text-theme-sm font-semibold transition ${
+            tab === 'units'
+              ? 'bg-white text-brand-600 shadow-theme-xs'
+              : 'text-gray-500 hover:text-gray-800'
+          }`}
+        >
+          Quỹ căn
+          {unitsHydrated && (
+            <span className="ml-1.5 text-theme-xs font-bold text-gray-400">
+              {unitFavorites.length}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {tab === 'projects' && (
+        <>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+        {mostRecentSavedAt ? (
+          <p className="text-theme-xs text-gray-400">
+            Lưu gần nhất: {formatRelativeSaved(mostRecentSavedAt)}
+          </p>
+        ) : (
+          <span />
+        )}
         {isHydrated && favorites.length > 0 && (
           <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1.5 text-theme-xs font-semibold uppercase tracking-wide text-brand-700">
             <FiHeart aria-hidden className="h-3.5 w-3.5" />
@@ -379,6 +479,107 @@ const FavoriteList = () => {
           ))}
         </div>
       )}
+        </>
+      )}
+
+      {tab === 'units' && (
+        <>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+            {mostRecentUnitSavedAt ? (
+              <p className="text-theme-xs text-gray-400">
+                Lưu gần nhất: {formatRelativeSaved(mostRecentUnitSavedAt)}
+              </p>
+            ) : (
+              <span />
+            )}
+            {unitsHydrated && unitFavorites.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1.5 text-theme-xs font-semibold uppercase tracking-wide text-brand-700">
+                  <FiHeart aria-hidden className="h-3.5 w-3.5" />
+                  {unitFavorites.length} quỹ căn
+                </span>
+                {!showClearConfirm ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowClearConfirm(true)}
+                    className="inline-flex items-center gap-1.5 rounded-md border border-error-200 bg-error-50 px-3 py-1.5 text-theme-xs font-semibold text-error-700 transition hover:bg-error-100"
+                  >
+                    <FiTrash2 aria-hidden className="h-3.5 w-3.5" />
+                    Xóa tất cả
+                  </button>
+                ) : (
+                  <div className="inline-flex items-center gap-1.5 rounded-md border border-error-300 bg-error-50 px-3 py-1.5">
+                    <span className="text-theme-xs font-semibold text-error-700">
+                      Xóa tất cả?
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleClearAll}
+                      className="rounded bg-error-600 px-2 py-0.5 text-theme-xs font-bold uppercase text-white hover:bg-error-700"
+                    >
+                      Có
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowClearConfirm(false)}
+                      className="rounded bg-white px-2 py-0.5 text-theme-xs font-bold uppercase text-gray-600 hover:bg-gray-100"
+                    >
+                      Không
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {(!unitsHydrated || isUnitsLoading) && (
+            <div className={GRID_CLASS}>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="h-96 animate-pulse rounded-xl bg-gray-100"
+                  aria-hidden
+                />
+              ))}
+            </div>
+          )}
+
+          {unitsHydrated && !isUnitsLoading && unitFavorites.length === 0 && (
+            <div className="mx-auto flex max-w-md flex-col items-center rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-6 py-12 text-center">
+              <span className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-white text-brand-500 shadow-theme-xs">
+                <FiHeart aria-hidden className="h-6 w-6" />
+              </span>
+              <h2 className="text-lg font-semibold text-gray-900">
+                Chưa có quỹ căn yêu thích
+              </h2>
+              <p className="mt-1.5 text-theme-sm text-gray-500">
+                Bấm trái tim trên thẻ căn ở trang Quỹ căn để lưu vào đây.
+              </p>
+              <Link
+                href="/quy-can"
+                className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-brand-500 px-5 py-2.5 text-theme-sm font-semibold text-white transition hover:bg-brand-600"
+              >
+                Xem quỹ căn
+                <FiArrowRight aria-hidden className="h-4 w-4" />
+              </Link>
+            </div>
+          )}
+
+          {unitsHydrated && !isUnitsLoading && units.length > 0 && (
+            <div className={GRID_CLASS}>
+              {units.map((unit) => (
+                <UnitCard
+                  key={unit.publicId}
+                  unit={unit}
+                  onUnitClick={setSelectedUnit}
+                />
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      <UnitModal unit={selectedUnit} onClose={() => setSelectedUnit(null)} />
     </>
   );
 };
