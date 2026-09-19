@@ -175,33 +175,43 @@ const SiteFooter = () => (
         Luoi 12 cot: 3 cho thuong hieu (du rong cho doan mo ta), 2 cho moi cot
         lien ket, 3 cho khoi tap doan. Moi cot PHAI tu khai bao span - thieu
         la roi ve 1/12 va nhan bi vo tung chu mot. */}
-    <div className="site-container grid grid-cols-1 gap-x-8 gap-y-10 py-12 sm:grid-cols-2 lg:grid-cols-12">
-      <div className="sm:col-span-2 lg:col-span-3">
-        <Link href="/" aria-label="Trang chủ" className="mb-5 inline-block">
-          <Image
-            src="/images/home/logo-realtyhub.svg"
-            alt="RealtyHub"
-            width={180}
-            height={46}
-            className="h-11 w-auto"
-          />
-        </Link>
+    <div className="site-container grid grid-cols-1 gap-x-8 gap-y-10 py-12 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-12">
+      <div className="sm:col-span-2 md:col-span-3 lg:col-span-3">
+        {/* iPad: logo + mo ta ben trai, nut tai app ben phai cung hang.
+            Mobile va desktop (cot thuong hieu hep) van xep doc. */}
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between md:gap-10 lg:flex-col lg:gap-0">
+          <div className="min-w-0 md:max-w-md">
+            <Link href="/" aria-label="Trang chủ" className="mb-5 inline-block">
+              <Image
+                src="/images/home/logo-realtyhub.svg"
+                alt="RealtyHub"
+                width={180}
+                height={46}
+                className="h-11 w-auto"
+              />
+            </Link>
 
-        <p className="mb-7 max-w-sm text-theme-sm leading-relaxed text-gray-600">
-          Nền tảng công nghệ dành riêng cho môi giới bất động sản, cung cấp
-          thông tin dự án và công cụ hỗ trợ kinh doanh hiệu quả.
-        </p>
+            <p className="max-w-sm text-theme-sm leading-relaxed text-gray-600 lg:mb-7">
+              Nền tảng công nghệ dành riêng cho môi giới bất động sản, cung cấp
+              thông tin dự án và công cụ hỗ trợ kinh doanh hiệu quả.
+            </p>
+          </div>
 
-        <p className="mb-3 text-theme-sm font-bold uppercase tracking-wide text-navy-800">
-          Tải ứng dụng
-        </p>
-        {/* Nen chan trang la mau trang nen huy hieu phai dung ban vien sang;
-            ban den goc chi hop khi nen dam. */}
-        <AppStoreBadges variant="light" />
+          <div className="mt-7 shrink-0 md:mt-0 lg:mt-0">
+            <p className="mb-3 text-theme-sm font-bold uppercase tracking-wide text-navy-800">
+              Tải ứng dụng
+            </p>
+            {/* Nen chan trang la mau trang nen huy hieu phai dung ban vien sang;
+                ban den goc chi hop khi nen dam. */}
+            <AppStoreBadges variant="light" />
+          </div>
+        </div>
       </div>
 
-      <FooterLinkList title="Về Realty Hub" links={ABOUT_LINKS} className="lg:col-span-2" />
-      <div className="contents">
+      {/* iPad: 3 cot link chia deu ca chieu ngang. Desktop: contents de
+          tung cot vao luoi 12 nhu cu. */}
+      <div className="grid grid-cols-1 gap-x-8 gap-y-10 sm:col-span-2 sm:grid-cols-2 md:col-span-3 md:grid-cols-3 lg:contents">
+        <FooterLinkList title="Về Realty Hub" links={ABOUT_LINKS} className="lg:col-span-2" />
         <FooterLinkList
           title="Dành cho môi giới"
           links={BROKER_LINKS}
@@ -216,7 +226,7 @@ const SiteFooter = () => (
         />
       </div>
 
-      <div className="sm:col-span-2 lg:col-span-3">
+      <div className="sm:col-span-2 md:col-span-3 lg:col-span-3">
         <FooterHeading>Website cùng tập đoàn</FooterHeading>
         {/* The logo: ghim chieu cao anh de hai logo khac ti le van thang hang,
             ten don vi chi con o `alt` va tooltip - de ca chu lan logo la doc
@@ -314,22 +324,29 @@ const SiteFooter = () => (
     {/* ── Thong tin dang ky doanh nghiep ───────────────────────────────
         Chay thanh doan van xuoi nhu ban thiet ke, khong ke bang: day la thong
         tin bat buoc theo luat, doc lien mach de hon la nhoi vao o. */}
-    <div className="border-t border-gray-200 bg-gray-25 mb-14 sm:mb-0">
+    {/* `MobileBottomTabs` phu len day trang cho toi breakpoint lg - chua cho
+        no bang margin, neu khong dong lien he cuoi cung bi thanh tab cat mat. */}
+    <div className="mb-16 border-t border-gray-200 bg-gray-25 lg:mb-0">
       <div className="site-container space-y-1.5 py-6 text-theme-xs leading-relaxed text-gray-500">
         <p>
           © 2026.{' '}
           <span className="font-semibold uppercase text-gray-700">{COMPANY.name}.</span>{' '}
           GPĐKKD: {COMPANY.license}, thành lập vào tháng {COMPANY.firstRegistered}.
         </p>
-        <p>
-          Địa chỉ: {COMPANY.address}. Điện thoại:{' '}
-          <a href={COMPANY.phoneHref} className="transition hover:text-brand-600">
-            {COMPANY.phone}
-          </a>
-          . Email:{' '}
-          <a href={`mailto:${COMPANY.email}`} className="transition hover:text-brand-600">
-            {COMPANY.email}
-          </a>
+        <p>Địa chỉ: {COMPANY.address}.</p>
+        <p className="flex flex-wrap items-center gap-x-4">
+          <span className="whitespace-nowrap">
+            Điện thoại:{' '}
+            <a href={COMPANY.phoneHref} className="transition hover:text-brand-600">
+              {COMPANY.phone}
+            </a>
+          </span>
+          <span className="whitespace-nowrap">
+            Email:{' '}
+            <a href={`mailto:${COMPANY.email}`} className="transition hover:text-brand-600">
+              {COMPANY.email}
+            </a>
+          </span>
         </p>
         <p>
           Người đại diện theo pháp luật: {COMPANY.representative}.{' '}

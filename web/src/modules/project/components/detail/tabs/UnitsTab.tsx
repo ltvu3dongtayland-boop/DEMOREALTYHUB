@@ -11,6 +11,7 @@ import {
 import { useProjectDetail, useProjectUnits } from '../../../hooks/useProjects';
 import {
   DEFAULT_UNIT_QUERY,
+  DIRECTION_FILTER_OPTIONS,
   MAX_UNIT_SELECTION,
   UNIT_SORT_LABELS,
   UNIT_STATUS_LABELS,
@@ -216,7 +217,7 @@ const UnitsTab = ({ slug, lockedPhaseName }: UnitsTabProps) => {
             <FilterSelect
               label="Hướng"
               value={query.direction}
-              options={facets.directions.map((name) => ({ value: name, label: name }))}
+              options={DIRECTION_FILTER_OPTIONS}
               onChange={(value) => patchQuery({ direction: value })}
             />
             <FilterSelect

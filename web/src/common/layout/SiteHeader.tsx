@@ -116,7 +116,7 @@ const DrawerActionItem = ({
   /** Cần cho screen reader, riêng label vi (vd "Tin nhắn") có thể là content */
   ariaLabel?: string;
 }) => (
-  <li className="flex-1">
+  <li data-clean-hide="drawer-utility" className="flex-1">
     <Link
       href={href}
       onClick={onClose}
@@ -317,7 +317,7 @@ const SiteHeader = () => {
 
   return (
     <header className={`sticky top-0 z-40 border-b transition-colors ${headerColor}`}>
-      <div className="site-container flex h-16 items-center justify-between gap-4">
+      <div className="site-container relative flex h-16 items-center justify-between gap-4">
         <button
           type="button"
           onClick={() => setIsMobileOpen((open) => !open)}
@@ -328,7 +328,15 @@ const SiteHeader = () => {
           {isMobileOpen ? <FiX aria-hidden /> : <FiMenu aria-hidden />}
         </button>
 
-        <div data-clean-hide="brand-logo" className="contents">
+        {/* Tu tablet den truoc desktop chi con hamburger ben trai va nut tai
+            khoan ben phai - hai ben lech be rong nen `justify-between` day
+            logo sang trai. Ghim logo vao giua khung nhin o khoang do; duoi md
+            khong du cho nen giu nguyen flex, tu xl tro len nav thuc su chiem
+            cho nen cung tra ve flex. */}
+        <div
+          data-clean-hide="brand-logo"
+          className="contents md:absolute md:left-1/2 md:block md:-translate-x-1/2 xl:contents"
+        >
           <BrandMark />
         </div>
 
@@ -420,7 +428,11 @@ const SiteHeader = () => {
             <NotificationsPopover variant={variant} iconClass={iconColor} />
           </div>
 
-          <CleanModeToggle size="regular" className={iconColor} />
+          {/* Present mode chi co y nghia tren man hinh desktop (nav day du).
+              Tu tablet tro xuong header da rat gon nen an han cho do roi. */}
+          <span className="hidden xl:flex">
+            <CleanModeToggle size="regular" className={iconColor} />
+          </span>
 
           {/* Language switcher (dropdown): vi <-> en, preserve
               pathname + params + query hien tai. Hien thi o xl tro len;
@@ -463,48 +475,28 @@ const SiteHeader = () => {
               aria-label="Truy cập nhanh"
               className="flex shrink-0 items-stretch border-b border-gray-200 px-2 py-2"
             >
-              <li
-                data-clean-hide="drawer-utility"
-                className="flex-1"
-              >
-                <DrawerActionItem
-                  href="/tin-nhan"
-                  icon={<FiMessageSquare aria-hidden />}
-                  label={tHeader('messages')}
-                  onClose={() => setIsMobileOpen(false)}
-                  ariaLabel={tHeader('messages')}
-                />
-              </li>
-              <li
-                data-clean-hide="drawer-utility"
-                className="flex-1"
-              >
-                <DrawerActionItem
-                  href="/yeu-thich"
-                  icon={<FaRegHeart aria-hidden />}
-                  label={tHeader('favorite')}
-                  onClose={() => setIsMobileOpen(false)}
-                  ariaLabel={tHeader('favorite')}
-                />
-              </li>
-              <li
-                data-clean-hide="drawer-utility"
-                className="flex-1"
-              >
-                <DrawerActionItem
-                  href="/thong-bao"
-                  icon={<FiBell aria-hidden />}
-                  label={tHeader('notification')}
-                  badge="3"
-                  onClose={() => setIsMobileOpen(false)}
-                  ariaLabel={tHeader('notification')}
-                />
-              </li>
-              <li className="flex-1">
-                <div className="flex h-full items-center justify-center">
-                  <CleanModeToggle size="compact" />
-                </div>
-              </li>
+              <DrawerActionItem
+                href="/tin-nhan"
+                icon={<FiMessageSquare aria-hidden />}
+                label={tHeader('messages')}
+                onClose={() => setIsMobileOpen(false)}
+                ariaLabel={tHeader('messages')}
+              />
+              <DrawerActionItem
+                href="/yeu-thich"
+                icon={<FaRegHeart aria-hidden />}
+                label={tHeader('favorite')}
+                onClose={() => setIsMobileOpen(false)}
+                ariaLabel={tHeader('favorite')}
+              />
+              <DrawerActionItem
+                href="/thong-bao"
+                icon={<FiBell aria-hidden />}
+                label={tHeader('notification')}
+                badge="3"
+                onClose={() => setIsMobileOpen(false)}
+                ariaLabel={tHeader('notification')}
+              />
             </ul>
 
             <ul className="flex-1 overflow-y-auto">

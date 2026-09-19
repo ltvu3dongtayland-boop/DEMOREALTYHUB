@@ -28,7 +28,7 @@ export function StickyContact() {
           exit={{ opacity: 0, scale: 0.8 }}
           transition={{ duration: 0.2 }}
           data-clean-hide="floating-widget"
-          className="fixed bottom-24 right-6 z-35 flex flex-col items-center gap-3"
+          className="fixed bottom-[152px] right-6 z-35 flex flex-col items-center gap-3 lg:bottom-24"
         >
           <motion.a
             href="https://zalo.me/0939653777"

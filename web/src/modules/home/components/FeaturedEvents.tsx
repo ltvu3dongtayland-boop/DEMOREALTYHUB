@@ -77,7 +77,9 @@ const useFeaturedEvents = (events: EventItem[], limit: number) => {
   return useMemo(() => {
     const now = new Date();
     const upcomingAndOngoing = events.filter(
-      (e) => e.status === 'upcoming' || e.status === 'ongoing',
+      (e) =>
+        (e.status === 'upcoming' || e.status === 'ongoing') &&
+        Boolean(e.coverImage || e.thumbnailUrl),
     );
     const sorted = [...upcomingAndOngoing].sort(
       (a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime(),
@@ -173,12 +175,15 @@ const FeaturedEvents = ({ events, limit = 6 }: FeaturedEventsProps) => {
           <div className="relative">
             <div ref={emblaRef} className="overflow-hidden">
               <div className="flex gap-4">
-                {featuredEvents.map((event) => (
+                {featuredEvents.map((event, index) => (
                   <div
                     key={event.publicId}
                     className="flex-[0_0_88%] min-w-0"
                   >
-                    <EventCard event={event} />
+                    <EventCard
+                      event={event}
+                      ctaLabel={index === featuredEvents.length - 1 ? 'Đăng ký' : 'Xem chi tiết'}
+                    />
                   </div>
                 ))}
               </div>
@@ -239,8 +244,12 @@ const FeaturedEvents = ({ events, limit = 6 }: FeaturedEventsProps) => {
 
         {/* ── Desktop grid (sm+) ─────────────────────────────────────── */}
         <div className="hidden grid-cols-1 gap-5 sm:grid sm:grid-cols-2 lg:grid lg:grid-cols-3">
-          {featuredEvents.map((event) => (
-            <EventCard key={event.publicId} event={event} />
+          {featuredEvents.map((event, index) => (
+            <EventCard
+              key={event.publicId}
+              event={event}
+              ctaLabel={index === featuredEvents.length - 1 ? 'Đăng ký' : 'Xem chi tiết'}
+            />
           ))}
         </div>
       </div>
@@ -249,7 +258,13 @@ const FeaturedEvents = ({ events, limit = 6 }: FeaturedEventsProps) => {
 };
 
 /** Card su kien: cover + info + action. */
-const EventCard = ({ event }: { event: EventItem }) => {
+const EventCard = ({
+  event,
+  ctaLabel = 'Xem chi tiết',
+}: {
+  event: EventItem;
+  ctaLabel?: 'Xem chi tiết' | 'Đăng ký';
+}) => {
   const href = `/su-kien/${event.slug}`;
   const isOnline = event.location.isOnline;
   const tone = EVENT_TYPE_LABELS[event.type] ?? event.type;
@@ -360,11 +375,13 @@ const EventCard = ({ event }: { event: EventItem }) => {
         <div className="mt-auto pt-2">
           <Link
             href={href}
-            aria-label={event.title}
+            aria-label={`${ctaLabel} ${event.title}`}
             className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-brand-500 px-4 py-2.5 text-theme-sm font-semibold text-white transition hover:bg-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
           >
-            Xem chi tiết
-            <FiChevronRight aria-hidden className="text-base" />
+            {ctaLabel}
+            {ctaLabel === 'Xem chi tiết' && (
+              <FiChevronRight aria-hidden className="text-base" />
+            )}
           </Link>
         </div>
       </div>

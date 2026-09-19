@@ -17,6 +17,7 @@ import UnitCard from './UnitCard';
 import UnitModal from './UnitModal';
 import { useAllUnits } from '../hooks/useProjects';
 import {
+  DIRECTION_FILTER_OPTIONS,
   type AllUnitsQuery,
   type UnitWithProject,
   UNIT_STATUS_LABELS,
@@ -380,15 +381,11 @@ const UnitInventoryPage = () => {
           onChange={(next) => applyParams({ [PARAM.status]: next })}
         />
         <FilterSelect
-          key={`huong-${queryKey}`}
           variant="chip"
           label="Hướng"
           icon={<FiCompass />}
           value={direction}
-          options={(facets?.directions ?? []).map((value) => ({
-            value,
-            label: value,
-          }))}
+          options={DIRECTION_FILTER_OPTIONS}
           isLoading={isFirstLoad}
           onChange={(next) => applyParams({ [PARAM.direction]: next })}
         />

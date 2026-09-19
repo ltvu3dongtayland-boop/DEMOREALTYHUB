@@ -20,13 +20,15 @@ const BackToTop = () => {
     //   - bottom-6: BackToTop (z-30, thấp nhất)
     //   - bottom-24: Zalo (z-35, giữa)
     //   - bottom-44: ChatWidget (z-40, cao nhất)
-    // Tất cả đều 56x56px
+    // Tất cả đều 56x56px.
+    // Dưới lg còn `MobileBottomTabs` (cao 56px) chiếm đáy màn hình nên cả
+    // chồng nút phải đẩy lên thêm 56px, nếu không nút sẽ che mất tab.
     <button
       type="button"
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       aria-label="Lên đầu trang"
       data-clean-hide="floating-widget"
-      className="fixed bottom-6 right-6 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-brand-500 text-white shadow-card-hover transition hover:bg-brand-600"
+      className="fixed bottom-20 right-6 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-brand-500 text-white shadow-card-hover transition hover:bg-brand-600 lg:bottom-6"
     >
       <FiArrowUp aria-hidden />
     </button>

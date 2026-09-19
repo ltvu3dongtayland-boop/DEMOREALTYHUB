@@ -297,6 +297,43 @@ export const UNIT_SORT_LABELS: Record<UnitSort, string> = {
   'dien-tich-giam': 'Diện tích lớn đến nhỏ',
 };
 
+const COMPASS_DIRECTIONS = [
+  'BẮC',
+  'ĐÔNG',
+  'ĐÔNG BẮC',
+  'ĐÔNG NAM',
+  'NAM',
+  'TÂY',
+  'TÂY BẮC',
+  'TÂY NAM',
+] as const;
+
+/** Nhom huong phong thuy. Value dung slug de URL on dinh, khong bi lech khi doc lai. */
+export const DIRECTION_GROUPS = {
+  'dong-tu-trach': ['ĐÔNG', 'ĐÔNG NAM', 'NAM', 'BẮC'],
+  'tay-tu-trach': ['TÂY', 'TÂY NAM', 'TÂY BẮC', 'ĐÔNG BẮC'],
+  'ĐÔNG TỨ TRẠCH': ['ĐÔNG', 'ĐÔNG NAM', 'NAM', 'BẮC'],
+  'TÂY TỨ TRẠCH': ['TÂY', 'TÂY NAM', 'TÂY BẮC', 'ĐÔNG BẮC'],
+} as const;
+
+export const DIRECTION_FILTER_OPTIONS: { value: string; label: string }[] = [
+  ...COMPASS_DIRECTIONS.map((name) => ({ value: name, label: name })),
+  { value: 'dong-tu-trach', label: 'ĐÔNG TỨ TRẠCH' },
+  { value: 'tay-tu-trach', label: 'TÂY TỨ TRẠCH' },
+];
+
+const normalizeDirection = (value: string) => value.trim().toLocaleUpperCase('vi');
+
+/** Khop huong don le hoac nhom Dong/Tay Tu Trach. */
+export const matchesDirection = (unitDirection: string, selected: string | null) => {
+  if (!selected) return true;
+  const unit = normalizeDirection(unitDirection);
+  if (unit === normalizeDirection(selected)) return true;
+  const members = DIRECTION_GROUPS[selected as keyof typeof DIRECTION_GROUPS];
+  if (!members) return false;
+  return (members as readonly string[]).includes(unit);
+};
+
 export type UnitQuery = {
   page: number;
   limit: number;

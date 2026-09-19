@@ -21,15 +21,16 @@ import {
   MOCK_PROJECTS,
   MOCK_REGIONS,
 } from '../mocks/projects.mock';
-import type {
-  AllUnitsQuery,
-  PaginatedAllUnits,
-  PaginatedUnits,
-  PhaseDetail,
-  ProjectDetail,
-  ProjectUnit,
-  UnitQuery,
-  UnitWithProject,
+import {
+  matchesDirection,
+  type AllUnitsQuery,
+  type PaginatedAllUnits,
+  type PaginatedUnits,
+  type PhaseDetail,
+  type ProjectDetail,
+  type ProjectUnit,
+  type UnitQuery,
+  type UnitWithProject,
 } from '../models/project-detail.model';
 import {
   AMENITY_TAG_LABELS,
@@ -308,7 +309,7 @@ export const ProjectService = {
       if (query.phaseName && unit.phaseName !== query.phaseName) return false;
       if (query.propertyTypeLabel && unit.propertyTypeLabel !== query.propertyTypeLabel)
         return false;
-      if (query.direction && unit.direction !== query.direction) return false;
+      if (!matchesDirection(unit.direction, query.direction)) return false;
       if (query.status && unit.status !== query.status) return false;
       return true;
     });
@@ -358,7 +359,7 @@ export const ProjectService = {
         return false;
       }
       if (query.phaseName && unit.phaseName !== query.phaseName) return false;
-      if (query.direction && unit.direction !== query.direction) return false;
+      if (!matchesDirection(unit.direction, query.direction)) return false;
       if (query.status && unit.status !== query.status) return false;
 
       if (query.priceMin !== null && unit.listedPrice < query.priceMin) return false;
@@ -443,7 +444,9 @@ export const ProjectService = {
         regionIds: facet('regionId'),
         propertyTypeLabels: [...new Set(matched.map((unit) => unit.propertyTypeLabel))].sort(),
         phaseNames: [...new Set(matched.map((unit) => unit.phaseName))].sort(),
-        directions: [...new Set(matched.map((unit) => unit.direction))].sort(),
+        directions: [...new Set(matched.map((unit) => unit.direction))].sort((a, b) =>
+          a.localeCompare(b, 'vi'),
+        ),
         statuses: [...new Set(matched.map((unit) => unit.status))],
       },
     });

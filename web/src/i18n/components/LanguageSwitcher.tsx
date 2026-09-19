@@ -183,12 +183,7 @@ export default function LanguageSwitcher({
                     : 'text-gray-700 hover:bg-gray-50 hover:text-brand-600'
                 }`}
               >
-                <span className="flex items-center gap-2">
-                  <span className="inline-flex h-5 min-w-5 items-center justify-center rounded bg-gray-100 px-1.5 text-[10px] font-bold uppercase tracking-wide text-gray-600">
-                    {locale}
-                  </span>
-                  <span>{localeLabels[locale]}</span>
-                </span>
+                <span>{localeLabels[locale]}</span>
                 {isActive && (
                   <span aria-hidden className="text-brand-500">
                     ✓
