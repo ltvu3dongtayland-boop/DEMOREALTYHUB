@@ -58,7 +58,7 @@ const UnitModalHeader = ({
     "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-all";
 
   return (
-    <div className="border-b border-gray-200 bg-white pb-4 max-md:pb-3">
+    <div className="border-b border-gray-200 bg-white pb-4 max-md:pb-3 laptop:pb-2">
       <div className="flex items-start justify-between gap-4 max-md:gap-3">
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <div className="flex flex-wrap items-center gap-2">

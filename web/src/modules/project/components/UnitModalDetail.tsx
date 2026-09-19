@@ -131,14 +131,16 @@ const UnitModalDetail = ({
       {/* ── Content: iPad/desktop 2 cot nhu cu, mobile xep 1 cot ── */}
       <div className="flex min-h-0 flex-1 overflow-hidden max-md:flex-col max-md:overflow-y-auto">
         <div className="flex w-1/2 shrink-0 flex-col overflow-hidden border-r border-gray-200 max-md:w-full max-md:border-r-0">
-          <div className="flex-1 overflow-hidden pt-2 pr-1 max-md:overflow-visible max-md:pr-0 max-md:pt-3">
-            <UnitModalGallery
-              images={images}
-              alt={imageAlt}
-              onCopy={onCopyImage}
-              onDownload={onDownloadImage}
-            />
-            <div className="mt-2">
+          <div className="flex-1 overflow-hidden pt-2 pr-1 max-md:overflow-visible max-md:pr-0 max-md:pt-3 laptop:flex laptop:min-h-0 laptop:flex-col">
+            <div className="laptop:min-h-0 laptop:flex-1 laptop:overflow-hidden">
+              <UnitModalGallery
+                images={images}
+                alt={imageAlt}
+                onCopy={onCopyImage}
+                onDownload={onDownloadImage}
+              />
+            </div>
+            <div className="mt-2 laptop:mt-1.5 laptop:shrink-0">
               <UnitModalAdvisor
                 advisors={advisors}
                 onCall={onCallAdvisor}

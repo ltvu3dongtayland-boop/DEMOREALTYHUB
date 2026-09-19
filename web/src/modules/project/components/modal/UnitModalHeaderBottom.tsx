@@ -53,7 +53,7 @@ const UnitModalHeaderBottom = ({
   onMore,
 }: UnitModalHeaderBottomProps) => {
   return (
-    <div className="border-b border-gray-200 py-2">
+    <div className="border-b border-gray-200 py-2 laptop:py-1.5">
       <div className="flex flex-wrap items-stretch gap-2 max-md:grid max-md:grid-cols-2">
         <div className="flex min-w-[120px] flex-1 items-center gap-2 rounded-lg border border-brand-200 bg-white px-3 py-2 max-md:min-w-0">
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-brand-500 text-white">

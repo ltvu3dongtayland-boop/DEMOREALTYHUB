@@ -10,7 +10,7 @@ const UnitModalBottom = ({
   onBookingLock,
 }: UnitModalBottomProps) => {
   return (
-    <div className="border-t border-slate-100 bg-white py-2">
+    <div className="border-t border-slate-100 bg-white py-2 laptop:py-1.5">
       <div className="flex items-center justify-center gap-2">
         <button
           type="button"

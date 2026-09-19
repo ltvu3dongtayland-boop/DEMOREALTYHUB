@@ -320,9 +320,15 @@ const SuKienPage = async ({
         </div>
       </section> */}
 
+      <div className="site-container pt-8">
+        <h1 className="mb-6 text-center text-3xl font-bold uppercase tracking-wide text-gray-900">
+          Danh sách Sự kiện
+        </h1>
+      </div>
+
       {/* ============ 02 FEATURED EVENT ============ */}
       {featured && status !== "past" && (
-        <section className="site-container pt-12 md:pt-16">
+        <section className="site-container">
           <FeaturedEventCard event={featured} />
         </section>
       )}

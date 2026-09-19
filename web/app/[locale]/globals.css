@@ -7,6 +7,9 @@
    dien thoai no hien san. */
 @custom-variant no-hover (@media (hover: none));
 
+/* Laptop ngan (1366x768, 1280x800, 1440x900): khong dung cho iPad hay man hinh cao. */
+@custom-variant laptop (@media (min-width: 1280px) and (max-height: 900px));
+
 @theme {
   --font-*: initial;
 

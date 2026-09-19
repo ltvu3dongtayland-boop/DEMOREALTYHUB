@@ -39,7 +39,7 @@ const UnitModalGallery = ({
   // Không có ảnh: hiển thị placeholder gradient
   if (!images.length) {
     return (
-      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-linear-to-br from-gray-100 to-gray-200 max-md:aspect-[16/10]">
+      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-linear-to-br from-gray-100 to-gray-200 max-md:aspect-[16/10] laptop:aspect-auto laptop:h-full laptop:min-h-0">
         <div className="flex h-full items-center justify-center text-gray-400">
           Đang cập nhật hình ảnh
         </div>
@@ -60,7 +60,7 @@ const UnitModalGallery = ({
   };
 
   return (
-    <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-gray-100 max-md:aspect-[16/10]">
+    <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-gray-100 max-md:aspect-[16/10] laptop:aspect-auto laptop:h-full laptop:min-h-0">
       {/* ── Ảnh lớn ─────────────────────────────────────────── */}
       <img
         src={current}

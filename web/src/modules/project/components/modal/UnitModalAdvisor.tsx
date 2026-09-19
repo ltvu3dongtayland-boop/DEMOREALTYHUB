@@ -52,15 +52,15 @@ const UnitModalAdvisor = ({
   const displayAdvisors = advisors.slice(0, 3);
 
   return (
-    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 max-md:flex max-md:overflow-x-auto max-md:pb-1">
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 max-md:flex max-md:overflow-x-auto max-md:pb-1 laptop:gap-1.5">
       {displayAdvisors.map((advisor) => (
         <div
           key={advisor.id}
-          className="flex items-center gap-3 rounded-2xl border border-blue-100/80 bg-gradient-to-b from-blue-50/40 to-slate-50/80 p-3 shadow-2xs transition-shadow hover:shadow-xs max-md:min-w-[210px]"
+          className="flex items-center gap-3 rounded-2xl border border-blue-100/80 bg-gradient-to-b from-blue-50/40 to-slate-50/80 p-3 shadow-2xs transition-shadow hover:shadow-xs max-md:min-w-[210px] laptop:min-w-0 laptop:gap-2 laptop:rounded-xl laptop:p-1.5"
         >
-          <div className="flex shrink-0 items-center gap-3">
-            <div className="flex flex-col items-center gap-1 max-md:items-start">
-              <h4 className="text-xs font-bold text-slate-900" title={advisor.name}>
+          <div className="flex min-w-0 shrink-0 items-center gap-3 laptop:w-full laptop:shrink">
+            <div className="flex flex-col items-center gap-1 max-md:items-start laptop:w-full laptop:items-start laptop:gap-0.5">
+              <h4 className="max-w-full truncate text-xs font-bold text-slate-900" title={advisor.name}>
                 {advisor.name}
               </h4>
               {advisor.role && (
@@ -68,27 +68,27 @@ const UnitModalAdvisor = ({
                   {advisor.role}
                 </span>
               )}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 laptop:gap-1">
                 <img
                   src={advisor.avatar}
                   alt={advisor.name}
-                  className="h-12 w-12 rounded-full object-cover border-2 border-white shadow-2xs"
+                  className="h-12 w-12 rounded-full object-cover border-2 border-white shadow-2xs laptop:h-8 laptop:w-8"
                 />
                 <button
                   type="button"
                   onClick={() => onCall ? onCall(advisor) : window.open(`tel:${advisor.phone}`)}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500 text-white shadow-xs transition-all hover:bg-emerald-600 active:scale-95"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500 text-white shadow-xs transition-all hover:bg-emerald-600 active:scale-95 laptop:h-7 laptop:w-7"
                   title="Gọi điện"
                 >
-                  <FiPhone className="h-4 w-4 fill-white" />
+                  <FiPhone className="h-4 w-4 fill-white laptop:h-3.5 laptop:w-3.5" />
                 </button>
                 <button
                   type="button"
                   onClick={() => onMessage && onMessage(advisor)}
-                  className="flex h-12 w-12 items-center justify-center rounded-lg transition-all active:scale-95"
+                  className="flex h-12 w-12 items-center justify-center rounded-lg transition-all active:scale-95 laptop:h-8 laptop:w-8"
                   title="Nhắn tin"
                 >
-                  <Image src="/images/logo-zalo.webp" alt="Zalo" width={32} height={32} />
+                  <Image src="/images/logo-zalo.webp" alt="Zalo" width={32} height={32} className="laptop:h-6 laptop:w-6" />
                 </button>
               </div>
             </div>
