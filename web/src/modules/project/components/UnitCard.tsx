@@ -96,7 +96,7 @@ const UnitCard = ({ unit, onUnitClick }: UnitCardProps) => {
             <span
               aria-label="Căn độc quyền"
               title="Căn độc quyền"
-              className="absolute left-2 top-2 z-10 rounded-md bg-white px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-error-500 shadow-sm"
+              className="absolute left-2 top-2 z-10 inline-flex items-center rounded-full bg-linear-to-r from-orange-500 via-rose-500 to-red-600 px-2.5 py-[5px] text-[10px] font-black uppercase italic tracking-[0.18em] text-white shadow-[0_2px_10px_rgba(225,29,72,0.5),inset_0_1px_0_rgba(255,255,255,0.4)] ring-1 ring-white/30 animate-hot-pulse"
             >
               HOT
             </span>

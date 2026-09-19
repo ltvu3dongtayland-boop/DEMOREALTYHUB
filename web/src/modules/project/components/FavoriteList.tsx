@@ -20,7 +20,10 @@ import type {
   Project,
   ProjectSegment,
 } from '@/modules/project/models/project.model';
-import type { UnitWithProject } from '@/modules/project/models/project-detail.model';
+import {
+  matchesDirection,
+  type UnitWithProject,
+} from '@/modules/project/models/project-detail.model';
 import ProjectCard from './ProjectCard';
 import UnitCard from './UnitCard';
 import UnitModal from './UnitModal';
@@ -55,12 +58,41 @@ const SEGMENT_FILTER_LABELS: Record<ProjectSegment, string> = {
 type FavoriteTab = 'projects' | 'units';
 type SegmentFilter = 'all' | ProjectSegment;
 type SortKey = 'saved-desc' | 'name-asc' | 'segment';
+type UnitTypeFilter = 'all' | string;
+type UnitDirectionFilter = 'all' | 'dong-tu-trach' | 'tay-tu-trach';
+type UnitSortKey =
+  | 'saved-desc'
+  | 'price-asc'
+  | 'price-desc'
+  | 'area-desc'
+  | 'code-asc';
 
 const SORT_LABELS: Record<SortKey, string> = {
   'saved-desc': 'Vừa lưu',
   'name-asc': 'Tên A → Z',
   'segment': 'Phân khúc',
 };
+
+const UNIT_SORT_LABELS: Record<UnitSortKey, string> = {
+  'saved-desc': 'Vừa lưu',
+  'price-asc': 'Giá thấp → cao',
+  'price-desc': 'Giá cao → thấp',
+  'area-desc': 'Diện tích lớn → nhỏ',
+  'code-asc': 'Mã căn A → Z',
+};
+
+const UNIT_DIRECTION_CHIPS: { value: UnitDirectionFilter; label: string }[] = [
+  { value: 'all', label: 'Tất cả hướng' },
+  { value: 'dong-tu-trach', label: 'Đông tứ trạch' },
+  { value: 'tay-tu-trach', label: 'Tây tứ trạch' },
+];
+
+const chipClass = (active: boolean) =>
+  `rounded-full px-4 py-1.5 text-theme-xs font-semibold uppercase tracking-wide transition ${
+    active
+      ? 'bg-brand-500 text-white shadow-theme-xs'
+      : 'border border-gray-200 bg-white text-gray-600 hover:border-brand-400 hover:text-brand-600'
+  }`;
 
 const FavoriteList = () => {
   const { favorites, isHydrated, clearAll } = useFavorites();
@@ -82,6 +114,10 @@ const FavoriteList = () => {
   // UI state (filter + sort + share modal)
   const [segmentFilter, setSegmentFilter] = useState<SegmentFilter>('all');
   const [sortKey, setSortKey] = useState<SortKey>('saved-desc');
+  const [unitTypeFilter, setUnitTypeFilter] = useState<UnitTypeFilter>('all');
+  const [unitDirectionFilter, setUnitDirectionFilter] =
+    useState<UnitDirectionFilter>('all');
+  const [unitSortKey, setUnitSortKey] = useState<UnitSortKey>('saved-desc');
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
 
@@ -206,6 +242,71 @@ const FavoriteList = () => {
     return unitFavorites.reduce((max, entry) => Math.max(max, entry.savedAt), 0);
   }, [unitFavorites]);
 
+  const unitSavedAtMap = useMemo(() => {
+    const map = new Map<string, number>();
+    unitFavorites.forEach((entry) => map.set(entry.publicId, entry.savedAt));
+    return map;
+  }, [unitFavorites]);
+
+  const unitTypeCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    units.forEach((unit) => {
+      const key = unit.propertyTypeLabel || 'Khác';
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    });
+    return [...counts.entries()].sort((a, b) => a[0].localeCompare(b[0], 'vi'));
+  }, [units]);
+
+  const visibleUnits = useMemo(() => {
+    const filtered = units.filter((unit) => {
+      if (
+        unitTypeFilter !== 'all' &&
+        (unit.propertyTypeLabel || 'Khác') !== unitTypeFilter
+      ) {
+        return false;
+      }
+      if (
+        unitDirectionFilter !== 'all' &&
+        !matchesDirection(unit.direction, unitDirectionFilter)
+      ) {
+        return false;
+      }
+      return true;
+    });
+
+    const sorted = [...filtered];
+    switch (unitSortKey) {
+      case 'saved-desc':
+        sorted.sort(
+          (a, b) =>
+            (unitSavedAtMap.get(b.publicId) ?? 0) -
+            (unitSavedAtMap.get(a.publicId) ?? 0),
+        );
+        break;
+      case 'price-asc':
+        sorted.sort((a, b) => (a.listedPrice ?? 0) - (b.listedPrice ?? 0));
+        break;
+      case 'price-desc':
+        sorted.sort((a, b) => (b.listedPrice ?? 0) - (a.listedPrice ?? 0));
+        break;
+      case 'area-desc':
+        sorted.sort((a, b) => (b.landArea ?? 0) - (a.landArea ?? 0));
+        break;
+      case 'code-asc':
+        sorted.sort((a, b) => a.code.localeCompare(b.code, 'vi'));
+        break;
+      default:
+        break;
+    }
+    return sorted;
+  }, [
+    units,
+    unitTypeFilter,
+    unitDirectionFilter,
+    unitSortKey,
+    unitSavedAtMap,
+  ]);
+
   const handleCopyShare = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
@@ -219,6 +320,9 @@ const FavoriteList = () => {
   const handleClearAll = () => {
     if (tab === 'units') {
       clearAllUnits();
+      setUnitTypeFilter('all');
+      setUnitDirectionFilter('all');
+      setUnitSortKey('saved-desc');
     } else {
       clearAll();
     }
@@ -493,44 +597,141 @@ const FavoriteList = () => {
               <span />
             )}
             {unitsHydrated && unitFavorites.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1.5 text-theme-xs font-semibold uppercase tracking-wide text-brand-700">
-                  <FiHeart aria-hidden className="h-3.5 w-3.5" />
-                  {unitFavorites.length} quỹ căn
-                </span>
-                {!showClearConfirm ? (
-                  <button
-                    type="button"
-                    onClick={() => setShowClearConfirm(true)}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-error-200 bg-error-50 px-3 py-1.5 text-theme-xs font-semibold text-error-700 transition hover:bg-error-100"
-                  >
-                    <FiTrash2 aria-hidden className="h-3.5 w-3.5" />
-                    Xóa tất cả
-                  </button>
-                ) : (
-                  <div className="inline-flex items-center gap-1.5 rounded-md border border-error-300 bg-error-50 px-3 py-1.5">
-                    <span className="text-theme-xs font-semibold text-error-700">
-                      Xóa tất cả?
-                    </span>
-                    <button
-                      type="button"
-                      onClick={handleClearAll}
-                      className="rounded bg-error-600 px-2 py-0.5 text-theme-xs font-bold uppercase text-white hover:bg-error-700"
-                    >
-                      Có
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShowClearConfirm(false)}
-                      className="rounded bg-white px-2 py-0.5 text-theme-xs font-bold uppercase text-gray-600 hover:bg-gray-100"
-                    >
-                      Không
-                    </button>
-                  </div>
-                )}
-              </div>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1.5 text-theme-xs font-semibold uppercase tracking-wide text-brand-700">
+                <FiHeart aria-hidden className="h-3.5 w-3.5" />
+                {unitFavorites.length} quỹ căn
+              </span>
             )}
           </div>
+
+          {unitsHydrated && !isUnitsLoading && units.length > 0 && (
+            <div className="mb-6 flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-theme-xs">
+              <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                <div
+                  role="tablist"
+                  aria-label="Lọc theo loại hình"
+                  className="flex flex-wrap items-center gap-2"
+                >
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={unitTypeFilter === 'all'}
+                    onClick={() => setUnitTypeFilter('all')}
+                    className={chipClass(unitTypeFilter === 'all')}
+                  >
+                    Tất cả ({units.length})
+                  </button>
+                  {unitTypeCounts.map(([label, count]) => {
+                    const active = unitTypeFilter === label;
+                    return (
+                      <button
+                        key={label}
+                        type="button"
+                        role="tab"
+                        aria-selected={active}
+                        onClick={() => setUnitTypeFilter(label)}
+                        className={chipClass(active)}
+                      >
+                        {label} ({count})
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <label className="flex items-center gap-2 text-theme-xs text-gray-500">
+                    <span>Sắp xếp</span>
+                    <select
+                      value={unitSortKey}
+                      onChange={(event) =>
+                        setUnitSortKey(event.target.value as UnitSortKey)
+                      }
+                      className="rounded-md border border-gray-200 bg-white px-2.5 py-1.5 text-theme-sm font-medium text-gray-700 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-200"
+                    >
+                      {(Object.keys(UNIT_SORT_LABELS) as UnitSortKey[]).map(
+                        (key) => (
+                          <option key={key} value={key}>
+                            {UNIT_SORT_LABELS[key]}
+                          </option>
+                        ),
+                      )}
+                    </select>
+                  </label>
+
+                  <button
+                    type="button"
+                    onClick={handleCopyShare}
+                    className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-theme-xs font-semibold text-gray-700 transition hover:border-brand-400 hover:text-brand-600"
+                  >
+                    {shareCopied ? (
+                      <>
+                        <FiCheck aria-hidden className="h-3.5 w-3.5 text-success-600" />
+                        Đã sao chép
+                      </>
+                    ) : (
+                      <>
+                        <FiCopy aria-hidden className="h-3.5 w-3.5" />
+                        Chia sẻ
+                      </>
+                    )}
+                  </button>
+
+                  {!showClearConfirm ? (
+                    <button
+                      type="button"
+                      onClick={() => setShowClearConfirm(true)}
+                      className="inline-flex items-center gap-1.5 rounded-md border border-error-200 bg-error-50 px-3 py-1.5 text-theme-xs font-semibold text-error-700 transition hover:bg-error-100"
+                    >
+                      <FiTrash2 aria-hidden className="h-3.5 w-3.5" />
+                      Xóa tất cả
+                    </button>
+                  ) : (
+                    <div className="inline-flex items-center gap-1.5 rounded-md border border-error-300 bg-error-50 px-3 py-1.5">
+                      <span className="text-theme-xs font-semibold text-error-700">
+                        Xóa tất cả?
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleClearAll}
+                        className="rounded bg-error-600 px-2 py-0.5 text-theme-xs font-bold uppercase text-white hover:bg-error-700"
+                      >
+                        Có
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowClearConfirm(false)}
+                        className="rounded bg-white px-2 py-0.5 text-theme-xs font-bold uppercase text-gray-600 hover:bg-gray-100"
+                      >
+                        Không
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div
+                role="tablist"
+                aria-label="Lọc theo hướng phong thủy"
+                className="flex flex-wrap items-center gap-2 border-t border-gray-100 pt-3"
+              >
+                {UNIT_DIRECTION_CHIPS.map((chip) => {
+                  const active = unitDirectionFilter === chip.value;
+                  return (
+                    <button
+                      key={chip.value}
+                      type="button"
+                      role="tab"
+                      aria-selected={active}
+                      onClick={() => setUnitDirectionFilter(chip.value)}
+                      className={chipClass(active)}
+                    >
+                      {chip.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {(!unitsHydrated || isUnitsLoading) && (
             <div className={GRID_CLASS}>
@@ -565,9 +766,28 @@ const FavoriteList = () => {
             </div>
           )}
 
-          {unitsHydrated && !isUnitsLoading && units.length > 0 && (
+          {unitsHydrated &&
+            !isUnitsLoading &&
+            units.length > 0 &&
+            visibleUnits.length === 0 && (
+              <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 p-8 text-center text-theme-sm text-gray-500">
+                Không có quỹ căn khớp bộ lọc hiện tại.
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUnitTypeFilter('all');
+                    setUnitDirectionFilter('all');
+                  }}
+                  className="ml-2 font-semibold text-brand-600 hover:text-brand-700"
+                >
+                  Xem tất cả
+                </button>
+              </div>
+            )}
+
+          {unitsHydrated && !isUnitsLoading && visibleUnits.length > 0 && (
             <div className={GRID_CLASS}>
-              {units.map((unit) => (
+              {visibleUnits.map((unit) => (
                 <UnitCard
                   key={unit.publicId}
                   unit={unit}

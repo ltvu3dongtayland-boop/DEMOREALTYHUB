@@ -61,69 +61,71 @@ const Pagination = ({
   return (
     <nav
       aria-label={label}
-      className="flex flex-wrap items-center justify-center gap-2 py-6"
+      className="flex flex-col items-center gap-2.5 py-6 md:flex-row md:flex-wrap md:justify-center md:gap-2"
     >
-      <button
-        type="button"
-        onClick={() => onPageChange(1)}
-        disabled={currentPage <= 1}
-        aria-label="Về trang đầu"
-        className={navButtonClass}
-      >
-        <FiChevronsLeft aria-hidden />
-      </button>
-      <button
-        type="button"
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage <= 1}
-        aria-label="Trang trước"
-        className={navButtonClass}
-      >
-        <FiChevronLeft aria-hidden />
-      </button>
+      <div className="flex flex-wrap items-center justify-center gap-2">
+        <button
+          type="button"
+          onClick={() => onPageChange(1)}
+          disabled={currentPage <= 1}
+          aria-label="Về trang đầu"
+          className={navButtonClass}
+        >
+          <FiChevronsLeft aria-hidden />
+        </button>
+        <button
+          type="button"
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage <= 1}
+          aria-label="Trang trước"
+          className={navButtonClass}
+        >
+          <FiChevronLeft aria-hidden />
+        </button>
 
-      {pages.map((page, index) =>
-        page === 'gap' ? (
-          <span key={`gap-${index}`} className="px-1 text-theme-sm text-gray-400">
-            ...
-          </span>
-        ) : (
-          <button
-            key={page}
-            type="button"
-            onClick={() => onPageChange(page)}
-            aria-current={page === currentPage ? 'page' : undefined}
-            className={`flex h-9 min-w-9 items-center justify-center rounded border px-2 text-theme-sm font-medium transition ${
-              page === currentPage
-                ? 'border-brand-500 bg-brand-500 text-white'
-                : 'border-gray-300 bg-white text-gray-700 hover:border-brand-400 hover:text-brand-600'
-            }`}
-          >
-            {page}
-          </button>
-        ),
-      )}
+        {pages.map((page, index) =>
+          page === 'gap' ? (
+            <span key={`gap-${index}`} className="px-1 text-theme-sm text-gray-400">
+              ...
+            </span>
+          ) : (
+            <button
+              key={page}
+              type="button"
+              onClick={() => onPageChange(page)}
+              aria-current={page === currentPage ? 'page' : undefined}
+              className={`flex h-9 min-w-9 items-center justify-center rounded border px-2 text-theme-sm font-medium transition ${
+                page === currentPage
+                  ? 'border-brand-500 bg-brand-500 text-white'
+                  : 'border-gray-300 bg-white text-gray-700 hover:border-brand-400 hover:text-brand-600'
+              }`}
+            >
+              {page}
+            </button>
+          ),
+        )}
 
-      <button
-        type="button"
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage >= totalPages}
-        aria-label="Trang sau"
-        className={navButtonClass}
-      >
-        <FiChevronRight aria-hidden />
-      </button>
-      <button
-        type="button"
-        onClick={() => onPageChange(totalPages)}
-        disabled={currentPage >= totalPages}
-        aria-label="Tới trang cuối"
-        className={navButtonClass}
-      >
-        <FiChevronsRight aria-hidden />
-      </button>
+        <button
+          type="button"
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage >= totalPages}
+          aria-label="Trang sau"
+          className={navButtonClass}
+        >
+          <FiChevronRight aria-hidden />
+        </button>
+        <button
+          type="button"
+          onClick={() => onPageChange(totalPages)}
+          disabled={currentPage >= totalPages}
+          aria-label="Tới trang cuối"
+          className={navButtonClass}
+        >
+          <FiChevronsRight aria-hidden />
+        </button>
+      </div>
 
-      <label className="ml-2 flex items-center gap-2 text-theme-sm text-gray-500">
+      <label className="flex items-center gap-2 text-theme-sm text-gray-500 md:ml-2">
         <span className="sr-only">Số dòng mỗi trang</span>
         <select
           value={limit}
