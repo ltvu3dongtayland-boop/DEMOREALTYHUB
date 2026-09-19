@@ -3,7 +3,7 @@
  *
  * Tương thích với next-intl 4.x và Next.js 16 App Router. Dùng bởi:
  *  - `createNavigation()` trong `./navigation.ts`
- *  - `proxy.ts` (Next 16 thay thế `middleware.ts`)
+ *  - `middleware.ts` (locale rewrite; tránh `proxy.ts` trên Next 16.2 Windows)
  *  - File `request.ts` để load messages
  *
  * Doc chính thức:
