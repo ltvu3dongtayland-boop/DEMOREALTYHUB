@@ -3,7 +3,7 @@
  *
  * Tương thích với next-intl 4.x và Next.js 16 App Router. Dùng bởi:
  *  - `createNavigation()` trong `./navigation.ts`
- *  - `middleware.ts` (locale rewrite; tránh `proxy.ts` trên Next 16.2 Windows)
+ *  - `proxy.ts` (locale rewrite trên Next 16)
  *  - File `request.ts` để load messages
  *
  * Doc chính thức:
@@ -16,5 +16,8 @@ export const routing = defineRouting({
   locales: [...locales],
   defaultLocale,
   localePrefix,
-  localeDetection: true,
+  // Site tiếng Việt là mặc định. Tự dò Accept-Language/cookie sẽ đẩy
+  // trình duyệt English sang /en, mà Next 16.2 + Turbopack trên Windows
+  // đang 404 mọi route có prefix /en.
+  localeDetection: false,
 });
