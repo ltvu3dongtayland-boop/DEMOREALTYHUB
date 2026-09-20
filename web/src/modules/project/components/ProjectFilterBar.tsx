@@ -52,7 +52,7 @@ export type ProjectFilterValues = {
 export type ProjectViewMode = 'danh-sach' | 'ban-do';
 
 /** Cac o loc duoc dua len hang chip cho bam nhanh - phan con lai nam trong bang loc */
-type ChipSelectKey = 'regionId' | 'developerId' | 'status' | 'segment';
+type ChipSelectKey = 'regionId' | 'developerId' | 'segment';
 
 const SORT_OPTIONS = [
   { value: 'mac-dinh', label: 'Mặc định' },
@@ -129,7 +129,6 @@ const ProjectFilterBar = ({
       icon: <FiBriefcase />,
       options: options.developers,
     },
-    { key: 'status', label: 'Trạng thái', icon: <FiTag />, options: options.statuses },
   ];
 
   const submit = (event: FormEvent) => {

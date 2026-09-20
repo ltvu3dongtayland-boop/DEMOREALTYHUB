@@ -8,12 +8,11 @@ import Pagination from '@/common/components/Pagination';
 import { formatNumber } from '@/common/utils/format';
 import InvestorFilterBar from './InvestorFilterBar';
 import {
-  type InvestorFilterOptions,
   type InvestorFilterValues,
   type InvestorQuery,
   type InvestorSort,
 } from '../models/investor.model';
-import { useInvestorFilterOptions, useInvestorList } from '../hooks/useInvestors';
+import { useInvestorList } from '../hooks/useInvestors';
 import type { InvestorSummary } from '../models/investor.model';
 
 type InvestorListPageProps = {
@@ -58,11 +57,6 @@ const PARAM_OF: Record<keyof InvestorFilterValues, string> = {
 
 const ALLOWED_LIMITS = [12, 24, 48];
 const DEFAULT_LIMIT = 12;
-
-const EMPTY_OPTIONS: InvestorFilterOptions = {
-  regions: [],
-  minProjectCounts: [],
-};
 
 /** Null / empty string / false → delete the param */
 const toParam = (
@@ -161,8 +155,6 @@ const InvestorListPage = ({ initialInvestors }: InvestorListPageProps) => {
   );
 
   const listQuery = useInvestorList(query);
-  const optionsQuery = useInvestorFilterOptions();
-  const options = optionsQuery.data ?? EMPTY_OPTIONS;
 
   // ── Filter bar values ────────────────────────────────────────────────
   const filterValues: InvestorFilterValues = {
@@ -232,10 +224,6 @@ const InvestorListPage = ({ initialInvestors }: InvestorListPageProps) => {
       <div className="mb-4">
         <InvestorFilterBar
           values={filterValues}
-          options={options}
-          isLoadingOptions={optionsQuery.isLoading}
-          activeCount={activeCount}
-          onClearAll={clearAllFilters}
           onSubmitSearch={submitSearch}
           onChange={handleFilterChange}
           sort={sort}
@@ -245,19 +233,6 @@ const InvestorListPage = ({ initialInvestors }: InvestorListPageProps) => {
             })
           }
         />
-      </div>
-
-      {/* ── So lieu tong hop ──────────────────────────────────────── */}
-      <div className="mb-4 flex min-h-5 items-center justify-between text-theme-sm text-gray-500">
-        {isFirstLoad && !initialInvestors ? (
-          <span className="h-4 w-32 animate-pulse rounded bg-gray-100" />
-        ) : (
-          <span aria-live="polite">
-            {hasActiveFilter ? 'Tìm thấy ' : 'Có '}
-            <strong className="text-gray-800">{total}</strong> chủ đầu tư
-          </span>
-        )}
-        {isRefreshing && <span className="text-gray-400">Đang cập nhật...</span>}
       </div>
 
       {/* ── Luoi chu dau tu ─────────────────────────────────────────── */}

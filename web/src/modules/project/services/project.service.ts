@@ -19,7 +19,8 @@ import {
 import {
   MOCK_DEVELOPERS,
   MOCK_PROJECTS,
-  MOCK_REGIONS,
+  MACRO_REGIONS,
+  matchesRegionFilter,
 } from '../mocks/projects.mock';
 import {
   matchesDirection,
@@ -64,7 +65,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 
 const matchesQuery = (project: Project, query: ProjectQuery): boolean => {
   if (query.developerId && project.developerId !== query.developerId) return false;
-  if (query.regionId && project.regionId !== query.regionId) return false;
+  if (!matchesRegionFilter(project.regionId, query.regionId)) return false;
   if (query.propertyType && project.propertyType !== query.propertyType) return false;
   if (query.status && project.status !== query.status) return false;
   if (query.segment && project.segment !== query.segment) return false;
@@ -211,7 +212,7 @@ export const ProjectService = {
 
     return delay({
       developers: MOCK_DEVELOPERS,
-      regions: MOCK_REGIONS,
+      regions: MACRO_REGIONS,
       propertyTypes: toOptions(PROPERTY_TYPE_SEGMENT_LABELS),
       statuses: realStatuses,
       segments: toOptions(PROPERTY_TYPE_SEGMENT_LABELS),

@@ -55,6 +55,50 @@ export const MOCK_REGIONS: FilterOption[] = [
   { value: 'kv-quang-ngai', label: 'Quảng Ngãi' },
 ];
 
+/** Chip Khu vực trên /du-an: Bắc / Trung / Nam thay cho danh sach tinh */
+export const MACRO_REGIONS: FilterOption[] = [
+  { value: 'kv-bac', label: 'Bắc' },
+  { value: 'kv-trung', label: 'Trung' },
+  { value: 'kv-nam', label: 'Nam' },
+];
+
+const NORTH_REGION_IDS = new Set([
+  'kv-ha-noi',
+  'kv-hung-yen',
+  'kv-quang-ninh',
+  'kv-hai-phong',
+]);
+const CENTRAL_REGION_IDS = new Set([
+  'kv-da-nang',
+  'kv-khanh-hoa',
+  'kv-quang-ngai',
+]);
+const SOUTH_REGION_IDS = new Set([
+  'kv-hcm',
+  'kv-long-an',
+  'kv-ba-ria-vung-tau',
+  'kv-dong-nai',
+  'kv-kien-giang',
+  'kv-binh-duong',
+]);
+
+const zoneOfRegion = (regionId: string): string | null => {
+  if (NORTH_REGION_IDS.has(regionId)) return 'kv-bac';
+  if (CENTRAL_REGION_IDS.has(regionId)) return 'kv-trung';
+  if (SOUTH_REGION_IDS.has(regionId)) return 'kv-nam';
+  return null;
+};
+
+/** Loc du an theo chip Bắc/Trung/Nam, van chap nhan regionId tinh cu neu co tren URL */
+export const matchesRegionFilter = (
+  projectRegionId: string,
+  queryRegionId: string | null,
+): boolean => {
+  if (!queryRegionId) return true;
+  if (projectRegionId === queryRegionId) return true;
+  return zoneOfRegion(projectRegionId) === queryRegionId;
+};
+
 type Seed = {
   slug: string;
   name: string;
