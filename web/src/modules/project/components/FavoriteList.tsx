@@ -546,7 +546,7 @@ const FavoriteList = () => {
             Bấm vào biểu tượng trái tim trên bất kỳ dự án nào để lưu vào đây.
           </p>
           <Link
-            href="/gio-hang"
+            href="/du-an"
             className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-brand-500 px-5 py-2.5 text-theme-sm font-semibold text-white transition hover:bg-brand-600"
           >
             Khám phá dự án

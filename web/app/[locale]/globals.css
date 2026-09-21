@@ -276,14 +276,20 @@
   }
 
   /* Badge HOT nhap nhay manh me - goi su chu y */
-  --animate-hot-pulse: hot-pulse 1s ease-in-out infinite;
+  --animate-hot-pulse: hot-pulse 0.9s ease-in-out infinite;
 
+  /* Nhan HOT phai dap vao mat: phong to manh hon va nhay do sang - chi doi
+     kich thuoc thi o co nho nhu tren card gan nhu khong thay gi. */
   @keyframes hot-pulse {
     0%, 100% {
       transform: scale(1);
+      opacity: 1;
+      filter: brightness(1);
     }
     50% {
-      transform: scale(1.08);
+      transform: scale(1.18);
+      opacity: 0.72;
+      filter: brightness(1.25);
     }
   }
 }

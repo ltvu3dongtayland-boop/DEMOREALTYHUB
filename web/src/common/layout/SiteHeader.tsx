@@ -49,7 +49,7 @@ type NavItem = {
   aliases?: string[];
 };
 
-const DU_AN_HREF = '/gio-hang';
+const DU_AN_HREF = '/du-an';
 
 // Navigation items for normal mode
 const NAV_ITEMS_NORMAL: NavItem[] = [
@@ -373,7 +373,10 @@ const SiteHeader = () => {
           </ul>
         </nav>
 
-        <div className="relative z-10 flex shrink-0 items-center gap-1">
+        {/* Dien thoai va may tinh bang: cac icon co huy hieu dem (tim, chuong)
+            nam sat nhau qua nen huy hieu lan sang icon ben canh - noi khoang
+            cach ra. Desktop con thanh nav day du nen van gap-1 nhu cu. */}
+        <div className="relative z-10 flex shrink-0 items-center gap-2 md:gap-2.5 xl:gap-1">
           <LanguageSwitcher iconClass={iconColor} />
 
           <Link

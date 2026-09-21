@@ -59,6 +59,22 @@ const DEVELOPER_ID_TO_INVESTOR_NAME: Record<string, string> = {
   'cdt-truong-son': 'Ecopark',
 };
 
+/**
+ * Nghich dao cua bang tren: slug Investor -> developerId (mock).
+ *
+ * Cac trang /du-an va /quy-can loc theo `developerId`, con hang logo chu dau
+ * tu lai lay tu INVESTORS (25 muc, co logo that) - day la cau noi giua hai
+ * ben. Investor chua co du an nao trong mock thi khong co developerId.
+ */
+const INVESTOR_SLUG_TO_DEVELOPER_ID = new Map<string, string>(
+  Object.entries(DEVELOPER_ID_TO_INVESTOR_NAME).flatMap(([developerId, name]) => {
+    const investor = INVESTORS.find(
+      (entry) => entry.name.toLowerCase() === name.toLowerCase(),
+    );
+    return investor ? [[investor.slug, developerId] as [string, string]] : [];
+  }),
+);
+
 /** Tim Investor theo developerId cu (mock). */
 const findInvestorByDeveloperId = (developerId: string): Investor | undefined => {
   const mappedName = DEVELOPER_ID_TO_INVESTOR_NAME[developerId];
@@ -210,6 +226,16 @@ export const InvestorService = {
         { value: '5', label: 'Từ 5 dự án' },
       ],
     }),
+
+  /**
+   * `developerId` tuong ung mot Investor - de hang logo chu dau tu bam vao la
+   * loc duoc danh sach du an/quy can. Tra null khi Investor chua co du an nao
+   * trong he thong (bam vao cung khong ra ket qua nao).
+   *
+   * KHI CO BACKEND: project se mang thang `investorId`, ham nay bo di.
+   */
+  developerIdBySlug: (slug: string): string | null =>
+    INVESTOR_SLUG_TO_DEVELOPER_ID.get(slug) ?? null,
 
   /** Lookup Investor theo slug - dung cho /chu-dau-tu/[slug].
    *  Tra ve null neu khong co slug do - route goi notFound(). */

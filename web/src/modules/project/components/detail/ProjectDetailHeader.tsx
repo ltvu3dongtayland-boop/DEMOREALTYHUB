@@ -39,7 +39,7 @@ const ProjectDetailHeader = ({ name }: ProjectDetailHeaderProps) => {
         <nav aria-label="Đường dẫn" className="min-w-0">
           <ol className="flex items-center gap-2 text-theme-sm text-gray-500">
             <li>
-              <Link href="/gio-hang" className="transition hover:text-brand-600">
+              <Link href="/du-an" className="transition hover:text-brand-600">
                 Trang chủ
               </Link>
             </li>

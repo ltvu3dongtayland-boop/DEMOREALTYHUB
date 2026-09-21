@@ -96,7 +96,7 @@ const FeaturedProjects = ({ projects: initialProjects }: FeaturedProjectsProps) 
             </h2>
           </div>
           <Link
-            href="/gio-hang"
+            href="/du-an"
             className="inline-flex items-center gap-1 text-theme-sm font-medium text-brand-600 transition hover:text-brand-700"
           >
             {t('viewAll')}

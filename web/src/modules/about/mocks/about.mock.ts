@@ -176,7 +176,7 @@ export const MOCK_ABOUT_CONTENT: AboutContent = {
         description:
           'Dự án đang mở bán kèm bảng giá, mặt bằng, tiến độ và pháp lý — cập nhật từ chủ đầu tư.',
         image: `${PROJECT_IMG}/hero-3-phoi-canh-tong-the.jpg`,
-        href: '/gio-hang',
+        href: '/du-an',
       },
       {
         icon: HiOutlineArrowsRightLeft,
@@ -294,7 +294,7 @@ export const MOCK_ABOUT_CONTENT: AboutContent = {
     title: 'Bắt đầu từ việc xem giá thật',
     body: 'Không cần đăng ký, không cần để lại số điện thoại. Xem trước rồi hãy quyết định có cần tư vấn hay không.',
     buyerLabel: 'Xem giỏ hàng dự án',
-    buyerHref: '/gio-hang',
+    buyerHref: '/du-an',
     agentNote: 'Bạn là môi giới muốn hợp tác? Để lại thông tin bên dưới.',
   },
 };

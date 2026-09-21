@@ -77,7 +77,7 @@ const ProjectHero = ({ project }: { project: ProjectDetail }) => {
       {/* <nav aria-label="Đường dẫn" className="mb-3 min-w-0">
         <ol className="flex items-center gap-1.5 text-base text-gray-500">
           <li>
-            <Link href="/gio-hang" className="transition hover:text-brand-600">
+            <Link href="/du-an" className="transition hover:text-brand-600">
               Dự án
             </Link>
           </li>

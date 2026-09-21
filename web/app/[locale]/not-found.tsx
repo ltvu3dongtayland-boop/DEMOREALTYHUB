@@ -125,7 +125,7 @@ const NotFound = async () => {
 
         {/* Search bar (decorative) */}
         <Link
-          href="/gio-hang"
+          href="/du-an"
           className="mt-10 flex w-full max-w-xl items-center gap-3 rounded-full border border-white/20 bg-white/10 px-5 py-3.5 text-left text-white shadow-theme-md backdrop-blur-md transition hover:bg-white/15"
         >
           <FiSearch aria-hidden className="h-5 w-5 text-white/70" />
@@ -150,7 +150,7 @@ const NotFound = async () => {
             {t("backHome")}
           </Link>
           <Link
-            href="/gio-hang"
+            href="/du-an"
             className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-3 text-theme-sm font-semibold text-white backdrop-blur-md transition hover:bg-white/20"
           >
             {t("explore")}
@@ -236,13 +236,13 @@ const POPULAR_LINKS = [
     emoji: "🏗️",
     label: "Dự án",
     desc: "Khám phá 250+ dự án",
-    href: "/gio-hang",
+    href: "/du-an",
   },
   {
     emoji: "🏠",
     label: "Căn hộ",
     desc: "Tìm căn phù hợp",
-    href: "/gio-hang?type=can-ho",
+    href: "/du-an?type=can-ho",
   },
   {
     emoji: "📰",

@@ -23,7 +23,9 @@ import {
   matchesRegionFilter,
 } from '../mocks/projects.mock';
 import {
+  FLOOR_RANGE_OPTIONS,
   matchesDirection,
+  matchesFloorRange,
   type AllUnitsQuery,
   type PaginatedAllUnits,
   type PaginatedUnits,
@@ -37,6 +39,7 @@ import {
   AMENITY_TAG_LABELS,
   LEGAL_LABELS,
   PROPERTY_TYPE_SEGMENT_LABELS,
+  SEGMENT_FILTER_OPTIONS,
   STATUS_LABELS,
   VIEWPOINT_LABELS,
   type FilterOption,
@@ -376,12 +379,22 @@ export const ProjectService = {
       if (query.developerId && project?.developerId !== query.developerId) return false;
       if (query.regionId && project?.regionId !== query.regionId) return false;
 
+      if (query.segment && unit.segment !== query.segment) return false;
+
       if (query.propertyTypeLabel && unit.propertyTypeLabel !== query.propertyTypeLabel) {
         return false;
       }
       if (query.phaseName && unit.phaseName !== query.phaseName) return false;
       if (!matchesDirection(unit.direction, query.direction)) return false;
       if (query.status && unit.status !== query.status) return false;
+      if (!matchesFloorRange(unit.floor, query.floorRange)) return false;
+      if (query.unitLine && unit.unitLine !== query.unitLine) return false;
+
+      // Ma can go tay nen khop mot phan va bo dau/hoa thuong - moi gioi hay
+      // nho mang may "A12" chu it khi nho du "BT-1205".
+      if (query.code && !normalize(unit.code).includes(normalize(query.code))) {
+        return false;
+      }
 
       if (query.priceMin !== null && unit.listedPrice < query.priceMin) return false;
       if (query.priceMax !== null && unit.listedPrice > query.priceMax) return false;
@@ -424,12 +437,18 @@ export const ProjectService = {
 
     const start = (query.page - 1) * query.limit;
 
-    // Facet dua tren TAP DA LOC - bo qua chinh no de khi chon 1 gia tri cua
-    // facet A thi facet B van goi y cac lua chon con lai cua nhung can khop A.
+    /**
+     * Facet dua tren TOAN BO can, khong phai tap da loc.
+     *
+     * Truoc day tinh tren tap da loc nen chon mot o la cac o khac tu bien mat,
+     * bang loc nhay lien tuc va nguoi dung mat luon duong quay lai. Giu nguyen
+     * danh sach thi bo loc dung yen; to hop nao khong co can thi so tren nut
+     * "Xem N ket qua" tu ve 0 - da du de biet.
+     */
     const facet = (exclude: 'projectSlug' | 'developerId' | 'regionId') => {
       const seen = new Set<string>();
       const result: { value: string; label: string }[] = [];
-      for (const unit of matched) {
+      for (const unit of all) {
         const project = projectBySlug.get(unit.projectSlug);
         if (exclude === 'projectSlug') {
           if (seen.has(unit.projectSlug)) continue;
@@ -463,12 +482,26 @@ export const ProjectService = {
         projectSlugs: facet('projectSlug'),
         developerIds: facet('developerId'),
         regionIds: facet('regionId'),
-        propertyTypeLabels: [...new Set(matched.map((unit) => unit.propertyTypeLabel))].sort(),
-        phaseNames: [...new Set(matched.map((unit) => unit.phaseName))].sort(),
-        directions: [...new Set(matched.map((unit) => unit.direction))].sort((a, b) =>
+        segments: SEGMENT_FILTER_OPTIONS.filter((option) =>
+          all.some((unit) => unit.segment === option.value),
+        ),
+        propertyTypeLabels: [...new Set(all.map((unit) => unit.propertyTypeLabel))].sort(),
+        phaseNames: [...new Set(all.map((unit) => unit.phaseName))].sort(),
+        directions: [...new Set(all.map((unit) => unit.direction))].sort((a, b) =>
           a.localeCompare(b, 'vi'),
         ),
-        statuses: [...new Set(matched.map((unit) => unit.status))],
+        statuses: [...new Set(all.map((unit) => unit.status))],
+        // Chi giu khoang tang that su co can o dau - khong phu thuoc bo loc
+        floorRanges: FLOOR_RANGE_OPTIONS.filter((option) =>
+          all.some((unit) => matchesFloorRange(unit.floor, option.value)),
+        ),
+        unitLines: [
+          ...new Set(
+            all
+              .map((unit) => unit.unitLine)
+              .filter((line): line is string => Boolean(line)),
+          ),
+        ].sort(),
       },
     });
   },

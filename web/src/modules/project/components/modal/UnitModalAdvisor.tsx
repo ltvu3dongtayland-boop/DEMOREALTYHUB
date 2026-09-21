@@ -51,20 +51,28 @@ const UnitModalAdvisor = ({
   // Giới hạn tối đa 3 advisors
   const displayAdvisors = advisors.slice(0, 3);
 
+  // Duoi 1024px (dien thoai + iPad) ba the tu van vien nam tren MOT hang va
+  // vuot ngang; truoc day tu iPad da doi sang luoi 2 cot nen the thu ba rot
+  // xuong hang duoi, day cao ca khoi va sinh ra thanh cuon doc.
+  // no-scrollbar: van vuot duoc, chi la khong ve thanh cuon.
+  //
+  // Rieng iPad: moi the rong dung mot nua hang (tru mot nua khoang cach), nen
+  // hai the dau hien TRON VEN, the thu ba vuot sang moi thay - thay vi bat de
+  // rong co dinh 210px lam the thu hai bi cat dang do.
   return (
-    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 max-md:flex max-md:overflow-x-auto max-md:pb-1 laptop:gap-1.5">
+    <div className="no-scrollbar grid grid-cols-1 gap-3 lg:grid-cols-3 max-lg:flex max-lg:overflow-x-auto max-lg:pb-1 laptop:gap-1.5">
       {displayAdvisors.map((advisor) => (
         <div
           key={advisor.id}
-          className="flex items-center gap-3 rounded-2xl border border-blue-100/80 bg-gradient-to-b from-blue-50/40 to-slate-50/80 p-3 shadow-2xs transition-shadow hover:shadow-xs max-md:min-w-[210px] laptop:min-w-0 laptop:gap-2 laptop:rounded-xl laptop:p-1.5"
+          className="flex items-center gap-3 rounded-2xl border border-blue-100/80 bg-gradient-to-b from-blue-50/40 to-slate-50/80 p-3 shadow-2xs transition-shadow hover:shadow-xs max-lg:min-w-[210px] md:max-lg:min-w-0 md:max-lg:w-[calc(50%-6px)] md:max-lg:shrink-0 laptop:min-w-0 laptop:gap-2 laptop:rounded-xl laptop:p-1.5"
         >
           <div className="flex min-w-0 shrink-0 items-center gap-3 laptop:w-full laptop:shrink">
-            <div className="flex flex-col items-center gap-1 max-md:items-start laptop:w-full laptop:items-start laptop:gap-0.5">
-              <h4 className="max-w-full truncate text-xs font-bold text-slate-900" title={advisor.name}>
+            <div className="flex flex-col items-center gap-1 max-lg:items-start laptop:w-full laptop:items-start laptop:gap-0.5">
+              <h4 className="max-w-full truncate text-sm font-bold text-slate-900" title={advisor.name}>
                 {advisor.name}
               </h4>
               {advisor.role && (
-                <span className="text-[10px] font-medium text-blue-600">
+                <span className="text-xs font-medium text-blue-600">
                   {advisor.role}
                 </span>
               )}

@@ -2,25 +2,16 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import {
-  FiBriefcase,
-  FiCompass,
-  FiHome,
-  FiMapPin,
-  FiSearch,
-  FiTag,
-  FiX,
-} from 'react-icons/fi';
+import { FiSearch, FiTag } from 'react-icons/fi';
 import FilterSelect from '@/common/components/FilterSelect';
 import Pagination from '@/common/components/Pagination';
+import UnitFilterStrip, { type UnitFilterValues } from './UnitFilterStrip';
 import UnitCard from './UnitCard';
 import UnitModal from './UnitModal';
 import { useAllUnits } from '../hooks/useProjects';
 import {
-  DIRECTION_FILTER_OPTIONS,
   type AllUnitsQuery,
   type UnitWithProject,
-  UNIT_STATUS_LABELS,
   type UnitSort,
 } from '../models/project-detail.model';
 
@@ -34,8 +25,9 @@ import {
  *
  * Ten tham so URL viet tat tieng Viet cho gon va doc duoc:
  *   q (search) · duan (projectSlug) · kv (regionId) · cdt (developerId)
- *   pk (phaseName) · lh (propertyTypeLabel) · huong (direction)
- *   tt (status) · gia-tu/gia-den · dt (areaMax) · sapxep · trang · sl
+ *   ld (segment) · pk (phaseName) · lh (propertyTypeLabel) · tang (floorRange)
+ *   huong (direction) · ma (code) · truc (unitLine) · tt (status)
+ *   gia-tu/gia-den · dt (areaMax) · sapxep · trang · sl
  */
 
 const PARAM = {
@@ -43,9 +35,13 @@ const PARAM = {
   projectSlug: 'duan',
   regionId: 'kv',
   developerId: 'cdt',
+  segment: 'ld',
   propertyTypeLabel: 'lh',
   phaseName: 'pk',
+  floorRange: 'tang',
   direction: 'huong',
+  code: 'ma',
+  unitLine: 'truc',
   status: 'tt',
   priceMin: 'gia-tu',
   priceMax: 'gia-den',
@@ -76,13 +72,6 @@ const parseSort = (value: string | null): UnitSort => {
     return value;
   }
   return 'mac-dinh';
-};
-
-/** Doi mot gia tri bo loc thanh doan text tren URL.
-    null khi "khong loc gi" -> applyParams se xoa han tham so. */
-const toParam = (value: string | number | null): string | null => {
-  if (value === null || value === '') return null;
-  return String(value);
 };
 
 /**
@@ -119,9 +108,13 @@ const UnitInventoryPage = () => {
   const projectSlug = searchParams.get(PARAM.projectSlug);
   const regionId = searchParams.get(PARAM.regionId);
   const developerId = searchParams.get(PARAM.developerId);
+  const segment = searchParams.get(PARAM.segment);
   const propertyTypeLabel = searchParams.get(PARAM.propertyTypeLabel);
   const phaseName = searchParams.get(PARAM.phaseName);
+  const floorRange = searchParams.get(PARAM.floorRange);
   const direction = searchParams.get(PARAM.direction);
+  const code = searchParams.get(PARAM.code);
+  const unitLine = searchParams.get(PARAM.unitLine);
   const status = searchParams.get(PARAM.status);
   const priceMin = readNumber(PARAM.priceMin);
   const priceMax = readNumber(PARAM.priceMax);
@@ -138,9 +131,23 @@ const UnitInventoryPage = () => {
   const [searchInput, setSearchInput] = useState(urlSearch);
   const [lastUrlSearch, setLastUrlSearch] = useState(urlSearch);
 
+  /**
+   * Tu khoa ma CHINH trang nay vua ghi len URL (state chu khong phai ref:
+   * gia tri nay duoc DOC ngay trong than render o ngay duoi).
+   *
+   * Khong co no thi moi lan ghi xong, URL doi va khoi dong bo ben duoi tuong
+   * la "URL doi tu ben ngoai" nen keo o nhap ve theo URL. Trong 300ms cho ghi
+   * nguoi dung da go them vai chu, va nhung chu do bi xoa mat - dung hien
+   * tuong "dang go tu nhien bay chu".
+   */
+  const [pushedSearch, setPushedSearch] = useState(urlSearch);
+
+  // Dong bo nguoc CHI khi URL doi tu ben ngoai: nut Back, dan mot link moi.
   if (lastUrlSearch !== urlSearch) {
     setLastUrlSearch(urlSearch);
-    if (searchInput !== urlSearch) setSearchInput(urlSearch);
+    if (urlSearch !== pushedSearch && searchInput !== urlSearch) {
+      setSearchInput(urlSearch);
+    }
   }
 
   const applyParams = useCallback(
@@ -165,17 +172,17 @@ const UnitInventoryPage = () => {
 
   useEffect(() => {
     if (searchInput === urlSearch) return;
-    const timer = setTimeout(
-      () => applyParams({ [PARAM.search]: searchInput || null }),
-      300,
-    );
+    const timer = setTimeout(() => {
+      setPushedSearch(searchInput);
+      applyParams({ [PARAM.search]: searchInput || null });
+    }, 300);
     return () => clearTimeout(timer);
   }, [searchInput, urlSearch, applyParams]);
 
-  const submitSearch = useCallback(
-    () => applyParams({ [PARAM.search]: searchInput || null }),
-    [applyParams, searchInput],
-  );
+  const submitSearch = useCallback(() => {
+    setPushedSearch(searchInput);
+    applyParams({ [PARAM.search]: searchInput || null });
+  }, [applyParams, searchInput]);
 
   // ── Truy van ───────────────────────────────────────────────────────────
   const query: AllUnitsQuery = useMemo(
@@ -187,10 +194,14 @@ const UnitInventoryPage = () => {
       projectSlug,
       developerId,
       regionId,
+      segment,
       propertyTypeLabel,
       phaseName,
       direction,
       status: status as AllUnitsQuery['status'],
+      floorRange,
+      code,
+      unitLine,
       priceMin,
       priceMax,
       areaMax,
@@ -203,9 +214,13 @@ const UnitInventoryPage = () => {
       projectSlug,
       developerId,
       regionId,
+      segment,
       propertyTypeLabel,
       phaseName,
+      floorRange,
       direction,
+      code,
+      unitLine,
       status,
       priceMin,
       priceMax,
@@ -225,12 +240,72 @@ const UnitInventoryPage = () => {
       projectSlug,
       developerId,
       regionId,
+      segment,
       propertyTypeLabel,
       phaseName,
+      floorRange,
       direction,
+      code,
+      unitLine,
       status,
     ].filter((value) => value !== null && value !== '').length +
     [priceMin !== null, priceMax !== null, areaMax !== null].filter(Boolean).length;
+
+  /**
+   * Gia tri cua 9 o loc trong bang - lay thang tu URL nen bang loc va ket qua
+   * khong bao gio lech nhau.
+   */
+  const filterValues: UnitFilterValues = {
+    developerId,
+    segment,
+    projectSlug,
+    phaseName,
+    propertyTypeLabel,
+    floorRange,
+    direction,
+    code,
+    unitLine,
+    status,
+    priceMin,
+    priceMax,
+    areaMax,
+  };
+
+  /** Moi khoa cua UnitFilterValues ung voi dung mot tham so URL */
+  const PARAM_OF: Record<keyof UnitFilterValues, string> = {
+    developerId: PARAM.developerId,
+    segment: PARAM.segment,
+    projectSlug: PARAM.projectSlug,
+    phaseName: PARAM.phaseName,
+    propertyTypeLabel: PARAM.propertyTypeLabel,
+    floorRange: PARAM.floorRange,
+    direction: PARAM.direction,
+    code: PARAM.code,
+    unitLine: PARAM.unitLine,
+    status: PARAM.status,
+    priceMin: PARAM.priceMin,
+    priceMax: PARAM.priceMax,
+    areaMax: PARAM.areaMax,
+  };
+
+  /**
+   * Nhan CA NHOM o loc mot lan roi ghi mot lan len URL: goi applyParams hai
+   * lan trong cung mot su kien thi lan sau van dung URL cu lam goc, ghi de
+   * mat lan truoc.
+   */
+  const handleFilterChange = useCallback(
+    (updates: Partial<UnitFilterValues>) => {
+      const params: Record<string, string | null> = {};
+      for (const [key, value] of Object.entries(updates)) {
+        params[PARAM_OF[key as keyof UnitFilterValues]] =
+          value === null || value === undefined ? null : String(value);
+      }
+      if (Object.keys(params).length > 0) applyParams(params);
+    },
+    // PARAM_OF duoc dung lai moi lan render nhung noi dung co dinh
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [applyParams],
+  );
 
   const clearAllFilters = useCallback(() => {
     setSearchInput('');
@@ -312,156 +387,19 @@ const UnitInventoryPage = () => {
         </div>
       </div>
 
-      {/* ── Hang 2: chip loc ────────────────────────────────────────────── */}
-      <div className="no-scrollbar -mx-4 mt-3 flex items-center gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
-        <FilterSelect
-          key={`pj-${queryKey}`}
-          variant="chip"
-          label="Dự án"
-          icon={<FiHome />}
-          value={projectSlug}
-          options={facets?.projectSlugs ?? []}
+      {/* ── Hang 2: logo chu dau tu + bang tat ca bo loc ───────────────── */}
+      {/* Hang chip loc cu (Du an / Khu vuc / Phan khu / Loai hinh / Trang thai
+          / Huong) da chuyen het vao trong bang cua nut "Loc" ben duoi. */}
+      <div className="mt-3">
+        <UnitFilterStrip
+          values={filterValues}
+          facets={facets}
           isLoading={isFirstLoad}
-          onChange={(next) => applyParams({ [PARAM.projectSlug]: next })}
+          resultCount={total}
+          activeCount={activeCount}
+          onChange={handleFilterChange}
+          onClearAll={clearAllFilters}
         />
-        <FilterSelect
-          key={`kv-${queryKey}`}
-          variant="chip"
-          label="Khu vực"
-          icon={<FiMapPin />}
-          value={regionId}
-          options={facets?.regionIds ?? []}
-          isLoading={isFirstLoad}
-          onChange={(next) => applyParams({ [PARAM.regionId]: next })}
-        />
-        <FilterSelect
-          key={`pk-${queryKey}`}
-          variant="chip"
-          label="Phân khu"
-          icon={<FiHome />}
-          value={phaseName}
-          options={(facets?.phaseNames ?? []).map((value) => ({ value, label: value }))}
-          isLoading={isFirstLoad}
-          onChange={(next) => applyParams({ [PARAM.phaseName]: next })}
-        />
-        <FilterSelect
-          key={`lh-${queryKey}`}
-          variant="chip"
-          label="Loại hình"
-          icon={<FiHome />}
-          value={propertyTypeLabel}
-          options={(facets?.propertyTypeLabels ?? []).map((value) => ({
-            value,
-            label: value,
-          }))}
-          isLoading={isFirstLoad}
-          onChange={(next) => applyParams({ [PARAM.propertyTypeLabel]: next })}
-        />
-        <FilterSelect
-          key={`cdt-${queryKey}`}
-          variant="chip"
-          label="Chủ đầu tư"
-          icon={<FiBriefcase />}
-          value={developerId}
-          options={facets?.developerIds ?? []}
-          isLoading={isFirstLoad}
-          onChange={(next) => applyParams({ [PARAM.developerId]: next })}
-        />
-        <FilterSelect
-          key={`tt-${queryKey}`}
-          variant="chip"
-          label="Trạng thái"
-          icon={<FiTag />}
-          value={status}
-          options={(facets?.statuses ?? []).map((value) => ({
-            value,
-            label: UNIT_STATUS_LABELS[value],
-          }))}
-          isLoading={isFirstLoad}
-          onChange={(next) => applyParams({ [PARAM.status]: next })}
-        />
-        <FilterSelect
-          variant="chip"
-          label="Hướng"
-          icon={<FiCompass />}
-          value={direction}
-          options={DIRECTION_FILTER_OPTIONS}
-          isLoading={isFirstLoad}
-          onChange={(next) => applyParams({ [PARAM.direction]: next })}
-        />
-
-        {activeCount > 0 && (
-          <button
-            type="button"
-            onClick={clearAllFilters}
-            className="shrink-0 whitespace-nowrap px-2 text-theme-sm font-medium text-gray-500 underline underline-offset-2 transition hover:text-error-600"
-          >
-            Xóa tất cả
-          </button>
-        )}
-      </div>
-
-      {/* ── Hang 3: khoang gia + dien tich (bang number) ───────────────── */}
-      <div className="mt-3 flex flex-wrap items-center gap-3 rounded-xl border border-gray-200 bg-gray-25 px-4 py-3">
-        <span className="text-theme-xs font-semibold uppercase tracking-wide text-gray-500">
-          Khoảng giá (tỷ VND)
-        </span>
-        <input
-          type="number"
-          min={0}
-          inputMode="numeric"
-          placeholder="Từ"
-          defaultValue={priceMin !== null ? priceMin / 1_000_000_000 : ''}
-          onBlur={(event) => {
-            const billion = Number(event.target.value);
-            const vnd = Number.isFinite(billion) && billion > 0 ? billion * 1_000_000_000 : null;
-            applyParams({ [PARAM.priceMin]: toParam(vnd) });
-          }}
-          className="h-9 w-24 rounded-md border border-gray-200 bg-white px-2 text-theme-sm text-gray-800 outline-none focus:border-brand-400"
-        />
-        <span className="text-gray-400">–</span>
-        <input
-          type="number"
-          min={0}
-          inputMode="numeric"
-          placeholder="Đến"
-          defaultValue={priceMax !== null ? priceMax / 1_000_000_000 : ''}
-          onBlur={(event) => {
-            const billion = Number(event.target.value);
-            const vnd = Number.isFinite(billion) && billion > 0 ? billion * 1_000_000_000 : null;
-            applyParams({ [PARAM.priceMax]: toParam(vnd) });
-          }}
-          className="h-9 w-24 rounded-md border border-gray-200 bg-white px-2 text-theme-sm text-gray-800 outline-none focus:border-brand-400"
-        />
-
-        <span className="ml-2 text-theme-xs font-semibold uppercase tracking-wide text-gray-500">
-          DT đất ≤
-        </span>
-        <input
-          type="number"
-          min={0}
-          inputMode="numeric"
-          placeholder="m²"
-          defaultValue={areaMax ?? ''}
-          onBlur={(event) => {
-            const value = Number(event.target.value);
-            applyParams({
-              [PARAM.areaMax]: Number.isFinite(value) && value > 0 ? String(value) : null,
-            });
-          }}
-          className="h-9 w-24 rounded-md border border-gray-200 bg-white px-2 text-theme-sm text-gray-800 outline-none focus:border-brand-400"
-        />
-
-        {hasActiveFilter && (
-          <button
-            type="button"
-            onClick={clearAllFilters}
-            className="ml-auto flex items-center gap-1 text-theme-sm font-medium text-gray-500 underline underline-offset-2 transition hover:text-error-600"
-          >
-            <FiX aria-hidden className="text-base" />
-            Xóa hết
-          </button>
-        )}
       </div>
 
       {/* ── So luong can tim thay ──────────────────────────────────────── */}

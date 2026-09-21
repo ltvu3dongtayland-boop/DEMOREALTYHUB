@@ -176,6 +176,11 @@ export const SEGMENT_LABELS: Record<ProjectSegment, string> = {
   'thap-tang': 'Dự án thấp tầng',
 };
 
+/** SEGMENT_LABELS duoi dang danh sach lua chon - dung cho o loc "Loai du an" */
+export const SEGMENT_FILTER_OPTIONS: FilterOption[] = (
+  Object.keys(SEGMENT_LABELS) as ProjectSegment[]
+).map((value) => ({ value, label: SEGMENT_LABELS[value] }));
+
 /**
  * Ban rut gon cho nhan tren anh card.
  *

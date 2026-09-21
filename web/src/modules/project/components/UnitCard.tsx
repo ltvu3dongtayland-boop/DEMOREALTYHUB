@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { FiMapPin, FiHome, FiMaximize, FiCompass, FiLayers, FiHeart } from "react-icons/fi";
 import ThumbCarousel from "@/common/components/ThumbCarousel";
 import { useFavoriteUnits } from "@/common/hooks/useFavoriteUnits";
@@ -91,14 +92,22 @@ const UnitCard = ({ unit, onUnitClick }: UnitCardProps) => {
             {unit.projectName}
           </span>
 
-          {/* Tag HOT (goc tren trai) - danh dau quy doc quyen */}
+          {/* Tag HOT (goc tren trai) - danh dau quy doc quyen.
+              Dung chung anh /images/hot.png voi popup chi tiet can, de mot can
+              doc quyen nhin o card hay o popup deu la cung mot nhan. */}
           {isHot && (
             <span
               aria-label="Căn độc quyền"
               title="Căn độc quyền"
-              className="absolute left-2 top-2 z-10 inline-flex items-center rounded-full bg-linear-to-r from-orange-500 via-rose-500 to-red-600 px-2.5 py-[5px] text-[10px] font-black uppercase italic tracking-[0.18em] text-white shadow-[0_2px_10px_rgba(225,29,72,0.5),inset_0_1px_0_rgba(255,255,255,0.4)] ring-1 ring-white/30 animate-hot-pulse"
+              className="absolute left-2 top-2 z-10 inline-flex animate-hot-pulse items-center"
             >
-              HOT
+              <Image
+                src="/images/hot.png"
+                alt="HOT"
+                width={60}
+                height={20}
+                className="h-6 w-auto"
+              />
             </span>
           )}
 

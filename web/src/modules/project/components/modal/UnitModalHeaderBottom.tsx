@@ -60,7 +60,7 @@ const UnitModalHeaderBottom = ({
             <FiHome className="h-4 w-4" />
           </span>
           <div className="flex min-w-0 flex-1 flex-col justify-center">
-            <p className="text-[11px] font-medium text-gray-500">Loại hình</p>
+            <p className="text-xs font-medium text-gray-600">Loại hình</p>
             <p className="truncate text-sm font-bold uppercase text-gray-900">
               {propertyTypeLabel}
             </p>
@@ -72,7 +72,7 @@ const UnitModalHeaderBottom = ({
             <FiCompass className="h-4 w-4" />
           </span>
           <div className="flex min-w-0 flex-1 flex-col justify-center">
-            <p className="text-[11px] font-medium text-gray-500">Hướng</p>
+            <p className="text-xs font-medium text-gray-600">Hướng</p>
             <p className="truncate text-sm font-bold uppercase text-gray-900">
               {direction}
             </p>
@@ -84,7 +84,7 @@ const UnitModalHeaderBottom = ({
             <FiMaximize className="h-4 w-4" />
           </span>
           <div className="flex min-w-0 flex-1 flex-col justify-center">
-            <p className="text-[11px] font-medium text-gray-500">Diện tích</p>
+            <p className="text-xs font-medium text-gray-600">Diện tích</p>
             <p className="truncate text-sm font-bold uppercase text-gray-900">
               {landArea} m²
             </p>

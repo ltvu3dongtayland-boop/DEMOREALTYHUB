@@ -259,6 +259,14 @@ export type ProjectUnit = {
   phaseName: string;
   status: UnitStatus;
 
+  /**
+   * Truc can - cot can trong mot toa/day (VD: '01', '07').
+   *
+   * Moi gioi hay hoi "con truc 05 khong?" vi cac can cung truc co cung view va
+   * cung mat bang, nen day la mot o loc rieng chu khong phai suy ra tu ma can.
+   */
+  unitLine?: string;
+
   // Thông tin bổ sung cho popup chi tiết
   /** Tầng (VD: 12, 15-20) */
   floor?: string;
@@ -377,6 +385,43 @@ export const MAX_UNIT_SELECTION = 5;
  * khong gop chung duoc) va them cac bo loc ngang hang du an: projectSlug,
  * developerId, regionId. Trang /quy-can dung query nay.
  */
+/**
+ * Khoang tang - gom tang le thanh vai nhom cho de bam.
+ *
+ * `floor` cua can la chuoi ('12', co the la '15-20' voi nha pho nhieu tang),
+ * nen viec khop do matchesFloorRange lam, khong so sanh so truc tiep.
+ */
+export const FLOOR_RANGE_OPTIONS: { value: string; label: string }[] = [
+  { value: '1-5', label: 'Tầng 1 - 5' },
+  { value: '6-10', label: 'Tầng 6 - 10' },
+  { value: '11-15', label: 'Tầng 11 - 15' },
+  { value: '16-20', label: 'Tầng 16 - 20' },
+  { value: '21-30', label: 'Tầng 21 - 30' },
+  { value: '31+', label: 'Tầng 31 trở lên' },
+];
+
+/** So tang dau tien doc duoc trong chuoi `floor` - '15-20' lay 15. */
+const firstFloorNumber = (floor: string | undefined): number | null => {
+  if (!floor) return null;
+  const matchedNumber = floor.match(/\d+/);
+  return matchedNumber ? Number(matchedNumber[0]) : null;
+};
+
+/** Can co nam trong khoang tang dang chon khong. Can khong ghi tang thi bi loai. */
+export const matchesFloorRange = (
+  floor: string | undefined,
+  selected: string | null,
+): boolean => {
+  if (!selected) return true;
+  const value = firstFloorNumber(floor);
+  if (value === null) return false;
+
+  if (selected.endsWith('+')) return value >= Number(selected.slice(0, -1));
+
+  const [from, to] = selected.split('-').map(Number);
+  return value >= from && value <= to;
+};
+
 export type AllUnitsQuery = {
   page: number;
   limit: number;
@@ -385,10 +430,18 @@ export type AllUnitsQuery = {
   projectSlug: string | null;
   developerId: string | null;
   regionId: string | null;
+  /** Loai du an cua du an chua can: 'cao-tang' | 'thap-tang' */
+  segment: string | null;
   propertyTypeLabel: string | null;
   phaseName: string | null;
   direction: string | null;
   status: UnitStatus | null;
+  /** Mot gia tri trong FLOOR_RANGE_OPTIONS */
+  floorRange: string | null;
+  /** Ma can - khop mot phan, khong phan biet hoa thuong */
+  code: string | null;
+  /** Truc can - khop chinh xac */
+  unitLine: string | null;
   /** Loc theo khoang gia (VND) */
   priceMin: number | null;
   priceMax: number | null;
@@ -404,10 +457,14 @@ export const DEFAULT_ALL_UNITS_QUERY: AllUnitsQuery = {
   projectSlug: null,
   developerId: null,
   regionId: null,
+  segment: null,
   propertyTypeLabel: null,
   phaseName: null,
   direction: null,
   status: null,
+  floorRange: null,
+  code: null,
+  unitLine: null,
   priceMin: null,
   priceMax: null,
   areaMax: null,
@@ -424,10 +481,14 @@ export type PaginatedAllUnits = {
     projectSlugs: { value: string; label: string }[];
     developerIds: { value: string; label: string }[];
     regionIds: { value: string; label: string }[];
+    segments: { value: string; label: string }[];
     propertyTypeLabels: string[];
     phaseNames: string[];
     directions: string[];
     statuses: UnitStatus[];
+    /** Chi cac khoang tang thuc su co can - tranh bam vao o rong */
+    floorRanges: { value: string; label: string }[];
+    unitLines: string[];
   };
 };
 

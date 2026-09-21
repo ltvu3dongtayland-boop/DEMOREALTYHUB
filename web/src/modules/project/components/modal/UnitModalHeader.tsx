@@ -106,7 +106,7 @@ const UnitModalHeader = ({
             )}
 
             {time && (
-              <div className="flex items-center gap-1.5 text-xs text-gray-400">
+              <div className="flex items-center gap-1.5 text-xs text-gray-600">
                 <FiClock className="h-3.5 w-3.5 shrink-0" />
                 <span>{time}</span>
               </div>
@@ -132,7 +132,7 @@ const UnitModalHeader = ({
             <p className="text-3xl font-semibold text-brand-600 max-md:text-xl">
               {formatBillion(price)}
             </p>
-            <span className="mt-1 text-xs font-medium text-gray-600 max-md:mt-0.5 max-md:text-[11px] max-md:leading-snug max-md:text-gray-500">
+            <span className="mt-1 text-xs font-medium text-gray-600 max-md:mt-0.5 max-md:text-xs max-md:leading-snug max-md:text-gray-600">
               (Giá FULL đã bao gồm VAT và KPBT)
             </span>
           </div>

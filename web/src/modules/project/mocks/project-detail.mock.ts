@@ -456,6 +456,12 @@ const buildUnits = (
     const fundType: UnitFundType =
       fundRoll < 0.2 ? 'doc-quyen' : fundRoll < 0.86 ? 'an-cheo' : 'thuong';
 
+    // Tang + truc can: du an cao tang moi co tang (1-34), con thap tang thi
+    // khong - bo loc "Khoang tang" se tu loai cac can khong ghi tang. Truc la
+    // cot can trong toa, 12 truc mot toa la co so hay gap.
+    const floor = isHighRise ? intBetween(rng, 1, 34) : null;
+    const unitLine = String(((slot - 1) % 12) + 1).padStart(2, '0');
+
     units.push({
       publicId: `${project.publicId}-unit-${String(index + 1).padStart(4, '0')}`,
       code: `${initialsOf(phaseName)}${block}-${String(slot).padStart(2, '0')}`,
@@ -470,6 +476,8 @@ const buildUnits = (
       buildArea,
       phaseName,
       status,
+      unitLine,
+      ...(floor !== null ? { floor: String(floor) } : {}),
     });
   }
 
@@ -997,6 +1005,7 @@ const buildBlancaCityUnits = (): ProjectUnit[] => {
         phaseName: 'Beacon Tower',
         status,
         floor: String(floor),
+        unitLine: String(slot).padStart(2, '0'),
         bedrooms: type.bedrooms,
         toilets: type.bedrooms + 1,
         floors: 1,
@@ -1085,6 +1094,7 @@ const buildImperiaUnits = (): ProjectUnit[] => {
         phaseName: 'The Paradise Tower',
         status,
         floor: String(floor),
+        unitLine: String(slot).padStart(2, '0'),
         bedrooms: type.bedrooms,
         toilets: type.bedrooms + 1,
         floors: type.label === 'Duplex' ? 2 : 1,

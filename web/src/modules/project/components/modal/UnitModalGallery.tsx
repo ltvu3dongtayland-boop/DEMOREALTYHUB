@@ -59,8 +59,11 @@ const UnitModalGallery = ({
     setActiveIndex((prev) => (prev + 1) % total);
   };
 
+  // Dien thoai dung dung ti le anh dung 4/5 nhu cac khuon kho khac: anh phoi
+  // canh von la anh dung, ep ve 16/10 la cat mat phan tren duoi nen nhin ra
+  // hinh gan vuong. max-h giu cho anh khong an het mot man hinh.
   return (
-    <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-gray-100 max-md:aspect-[16/10] laptop:aspect-auto laptop:h-full laptop:min-h-0">
+    <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-gray-100 max-md:max-h-[58vh] laptop:aspect-auto laptop:h-full laptop:min-h-0">
       {/* ── Ảnh lớn ─────────────────────────────────────────── */}
       <img
         src={current}

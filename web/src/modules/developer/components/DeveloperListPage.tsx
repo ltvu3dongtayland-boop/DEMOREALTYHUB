@@ -214,8 +214,10 @@ const InvestorListPage = ({ initialInvestors }: InvestorListPageProps) => {
   return (
     <div className="site-container py-8">
       {/* ── Tieu de ──────────────────────────────────────────────────── */}
-      <header className="mb-8">
-        <h1 className="text-center text-3xl font-bold uppercase tracking-wide text-gray-900 md:text-4xl">
+      {/* Cung co chu/khoang dem voi h1 cua /du-an va /quy-can - ba trang danh
+          sach nay doi qua lai nhieu, tieu de lech co la thay ngay. */}
+      <header className="mb-6">
+        <h1 className="text-center text-3xl font-bold uppercase tracking-wide text-gray-900">
           Danh sách Chủ đầu tư
         </h1>
       </header>

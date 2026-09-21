@@ -101,12 +101,57 @@ const toParam = (value: ProjectFilterValues[keyof ProjectFilterValues]) => {
 
 const GRID_CLASS = 'grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3 project-grid-clean';
 
+/**
+ * Khung xuong mot the du an.
+ *
+ * Kich thuoc phai khop ProjectCard TUNG LOP MOT (ti le anh 16/10, dem p-2 /
+ * md:p-4, hai loi tat cao 54px): the that cao hon khung xuong bao nhieu thi
+ * luc Suspense nha ra ca trang nhay bay nhieu.
+ */
 const CardSkeleton = () => (
   <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-card">
-    <div className="aspect-video w-full animate-pulse bg-gray-100" />
-    <div className="grid grid-cols-2 gap-1.5 p-4">
-      {Array.from({ length: 2 }).map((_, index) => (
-        <div key={index} className="h-12 animate-pulse rounded-lg bg-gray-100" />
+    <div className="aspect-[16/10] w-full animate-pulse bg-gray-100" />
+    <div className="p-2 md:p-4">
+      <div className="grid grid-cols-2 gap-1">
+        {Array.from({ length: 2 }).map((_, index) => (
+          <div key={index} className="h-[54px] animate-pulse rounded-lg bg-gray-100" />
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+/**
+ * Khung xuong CA TRANG, dung cho <Suspense> o route /du-an.
+ *
+ * De o day chu khong viet rieng trong route: hai ben phai cao bang nhau, ma
+ * chi file nay biet trang that duoc dung nhu the nao. Truoc day route tu ve
+ * mot luoi khac (1-2-3 cot, the cao 384px) nen luc doi sang noi dung that
+ * chieu cao trang doi dot ngot - man hinh giat mot cai xuong roi len lai.
+ */
+export const ProjectListSkeleton = () => (
+  <div className="site-container py-8">
+    <div className="mx-auto mb-6 h-9 w-72 animate-pulse rounded bg-gray-200" />
+
+    {/* Hang tim kiem + sap xep */}
+    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-4">
+      <div className="h-[54px] flex-1 animate-pulse rounded-full bg-gray-100 lg:max-w-2xl" />
+      <div className="h-9 w-40 animate-pulse rounded-full bg-gray-100 lg:ml-auto" />
+    </div>
+
+    {/* Hang chip loc */}
+    <div className="mt-3 flex gap-2 pb-1">
+      {Array.from({ length: 3 }).map((_, index) => (
+        <div key={index} className="h-9 w-32 animate-pulse rounded-full bg-gray-100" />
+      ))}
+    </div>
+
+    {/* Dong "Co N du an" */}
+    <div className="mb-4 mt-4 h-5 w-32 animate-pulse rounded bg-gray-100" />
+
+    <div className={GRID_CLASS}>
+      {Array.from({ length: 9 }).map((_, index) => (
+        <CardSkeleton key={index} />
       ))}
     </div>
   </div>
@@ -173,9 +218,22 @@ const ProjectListPage = () => {
   // Day la cach React khuyen dung de "chinh state khi prop doi": so sanh voi
   // gia tri truoc do luu trong state va set ngay trong than render, re hon
   // useEffect vi khong ton them mot vong commit.
+  /**
+   * Tu khoa ma CHINH trang nay vua ghi len URL (state chu khong phai ref:
+   * gia tri nay duoc DOC ngay trong than render o ngay duoi).
+   *
+   * Khong co no thi moi lan ghi xong, URL doi va khoi dong bo ben duoi tuong
+   * la "URL doi tu ben ngoai" nen keo o nhap ve theo URL. Trong 300ms cho ghi
+   * nguoi dung da go them vai chu, va nhung chu do bi xoa mat.
+   */
+  const [pushedSearch, setPushedSearch] = useState(urlSearch);
+
+  // Dong bo nguoc CHI khi URL doi tu ben ngoai: nut Back, dan mot link moi.
   if (lastUrlSearch !== urlSearch) {
     setLastUrlSearch(urlSearch);
-    if (searchInput !== urlSearch) setSearchInput(urlSearch);
+    if (urlSearch !== pushedSearch && searchInput !== urlSearch) {
+      setSearchInput(urlSearch);
+    }
   }
 
   const applyParams = useCallback(
@@ -200,19 +258,19 @@ const ProjectListPage = () => {
 
   useEffect(() => {
     if (searchInput === urlSearch) return;
-    const timer = setTimeout(
-      () => applyParams({ [PARAM.search]: searchInput || null }),
-      300,
-    );
+    const timer = setTimeout(() => {
+      setPushedSearch(searchInput);
+      applyParams({ [PARAM.search]: searchInput || null });
+    }, 300);
     return () => clearTimeout(timer);
   }, [searchInput, urlSearch, applyParams]);
 
   // Bam nut Tim kiem / go Enter: ap ngay, khong doi het 300ms. Sau khi URL doi
   // thi effect tren thay searchInput === urlSearch nen khong ap lai lan nua.
-  const submitSearch = useCallback(
-    () => applyParams({ [PARAM.search]: searchInput || null }),
-    [applyParams, searchInput],
-  );
+  const submitSearch = useCallback(() => {
+    setPushedSearch(searchInput);
+    applyParams({ [PARAM.search]: searchInput || null });
+  }, [applyParams, searchInput]);
 
   // ── Truy van ─────────────────────────────────────────────────────────────
   // Cac phep ep kieu o day la ranh gioi giua "chuoi bat ky tren URL" va union

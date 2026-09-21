@@ -92,6 +92,12 @@ type RangeSliderFieldProps = {
   unit: string;
   /** Chi mot nut keo - dien ta mot nguong tren: "tu 0 den N" */
   singleThumb?: boolean;
+  /**
+   * "boxes" (mac dinh): co them hai o go so ben duoi duong ray.
+   * "compact": chi duong ray, duoi la hai nhan "Tu: ... / Den: ...". Dung o
+   * nhung cho da chat cho, go so khong con quan trong bang nhin thay khoang.
+   */
+  variant?: 'boxes' | 'compact';
   /** Bo qua khi singleThumb */
   min: number | null;
   max: number | null;
@@ -107,6 +113,7 @@ const RangeSliderField = ({
   scale = 1,
   unit,
   singleThumb = false,
+  variant = 'boxes',
   min,
   max,
   onChange,
@@ -234,6 +241,21 @@ const RangeSliderField = ({
       onCommit={(next) => apply([lowPos, Math.max(next ?? limit, lowPos)])}
     />
   );
+
+  if (variant === 'compact') {
+    // Nhan doc theo VI TRI nut chu khong theo gia tri da loc: nut o dau ray
+    // nghia la "khong dat tran", nhung viet "Khong gioi han" o day thi hai
+    // nhan dai ngan lech nhau, nhin nhu hong. Hien luon moc dau ray.
+    return (
+      <div>
+        {track}
+        <div className="mt-2 flex justify-between text-theme-sm text-gray-600">
+          <span>Từ: {format(lowPos)}</span>
+          <span>Đến: {format(highPos)}</span>
+        </div>
+      </div>
+    );
+  }
 
   if (singleThumb) {
     return (

@@ -97,7 +97,7 @@ const ProjectDetailPage = ({ slug, initialProject }: ProjectDetailPageProps) => 
       <div className="site-container py-16 text-center">
         <p className="mb-4 text-theme-sm text-gray-500">Không tìm thấy dự án này.</p>
         <Link
-          href="/gio-hang"
+          href="/du-an"
           className="rounded-full border border-gray-300 px-5 py-2.5 text-theme-sm font-medium text-gray-700 transition hover:border-brand-400 hover:text-brand-600"
         >
           Về danh sách dự án
