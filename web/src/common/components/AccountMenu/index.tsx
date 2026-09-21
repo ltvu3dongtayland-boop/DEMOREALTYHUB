@@ -4,7 +4,13 @@ import { useState } from 'react';
 import { useSyncExternalStore } from 'react';
 import { usePathname } from 'next/navigation';
 
-import { FiLogOut, FiSettings, FiUser, FiUserCheck } from 'react-icons/fi';
+import {
+  FiLogOut,
+  FiSettings,
+  FiShoppingCart,
+  FiUser,
+  FiUserCheck,
+} from 'react-icons/fi';
 
 import {
   hasAdminAccess,
@@ -75,6 +81,11 @@ const AccountMenu = () => {
           {/* Link toi trang ho so (chua co trang - placeholder) */}
           <MenuItem href="/tai-khoan" onClick={close} icon={FiUserCheck}>
             Thông tin tài khoản
+          </MenuItem>
+
+          {/* Danh sach yeu cau booking da tao tu popup chi tiet quy can */}
+          <MenuItem href="/don-hang-cua-toi" onClick={close} icon={FiShoppingCart}>
+            Đơn hàng của tôi
           </MenuItem>
 
           {canAdmin && (

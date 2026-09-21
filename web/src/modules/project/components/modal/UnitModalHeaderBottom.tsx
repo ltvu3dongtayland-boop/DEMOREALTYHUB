@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  FiHome,
-  FiCompass,
-  FiMaximize,
-  FiCopy,
-  FiFileText,
-} from "react-icons/fi";
+import { FiHome, FiCompass, FiMaximize, FiCopy } from "react-icons/fi";
 
 type UnitModalHeaderBottomProps = {
   /** Loại hình (VD: "Song Lập", "Liền Kề", "Biệt Thự") */
@@ -17,8 +11,6 @@ type UnitModalHeaderBottomProps = {
   landArea: number;
   /** Mở so sánh căn */
   onCompareUnit?: () => void;
-  /** Mở so sánh chính sách */
-  onComparePolicy?: () => void;
   /** Chia sẻ */
   onShare?: () => void;
   /** Mở menu thêm */
@@ -31,13 +23,13 @@ type UnitModalHeaderBottomProps = {
  * Layout theo mockup:
  * ```
  * ┌──────────────────────────────────────────────────────────────────────┐
- * │ [🏠 Song Lập] [🧭 Tây] [▭ 228 m²] │ [⚖ So sánh căn] [📄 So sánh CS] │ [↗ Chia sẻ] [⋯] │
+ * │ [🏠 Song Lập] [🧭 Tây] [▭ 228 m²] │ [So sánh căn] │
  * └──────────────────────────────────────────────────────────────────────┘
  * ```
  *
  * - 3 ô đầu là thông tin tóm tắt của căn (không click, chỉ hiển thị).
- * - 2 ô tiếp theo là hành động chính (so sánh).
- * - 2 ô cuối là hành động phụ (chia sẻ, menu thêm).
+ * - Ô cuối là hành động so sánh căn. "Phiếu tính giá" va "Tính lãi vay" nằm
+ *   ngang dòng "Giá" trong cột thông tin, không ở hàng này.
  *
  * Sử dụng CSS Grid để đảm bảo:
  * - Các cột có width đều nhau
@@ -48,7 +40,6 @@ const UnitModalHeaderBottom = ({
   direction,
   landArea,
   onCompareUnit,
-  onComparePolicy,
   onShare,
   onMore,
 }: UnitModalHeaderBottomProps) => {
@@ -94,19 +85,10 @@ const UnitModalHeaderBottom = ({
         <button
           type="button"
           onClick={onCompareUnit}
-          className="flex min-w-[130px] flex-1 items-center justify-center gap-2 rounded-lg bg-brand-500 px-3 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-brand-600 max-md:min-w-0 max-md:text-xs"
+          className="flex min-w-[130px] flex-1 items-center justify-center gap-2 rounded-lg bg-brand-500 px-3 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-brand-600 max-md:col-span-2 max-md:min-w-0 max-md:text-xs"
         >
           <FiCopy className="h-4 w-4 shrink-0" />
           <span>So sánh căn</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={onComparePolicy}
-          className="flex min-w-[150px] flex-1 items-center justify-center gap-2 rounded-lg bg-brand-500 px-3 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-brand-600 max-md:col-span-2 max-md:min-w-0 max-md:text-xs"
-        >
-          <FiFileText className="h-4 w-4 shrink-0" />
-          <span>So sánh chính sách</span>
         </button>
       </div>
     </div>

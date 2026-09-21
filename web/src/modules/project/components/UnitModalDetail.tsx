@@ -45,8 +45,12 @@ type UnitModalDetailProps = {
   onToggleFavorite?: () => void;
   /** Mở so sánh căn */
   onCompareUnit?: () => void;
-  /** Mở so sánh chính sách */
-  onComparePolicy?: () => void;
+  /** Mở phiếu tính giá */
+  onPriceSheet?: () => void;
+  /** Mở bảng tính lãi vay */
+  onLoanCalculator?: () => void;
+  /** Mở bảng tạo yêu cầu lock căn */
+  onBookingLock?: () => void;
   /** Chia sẻ */
   onShare?: () => void;
   /** Mở menu thêm */
@@ -90,7 +94,9 @@ const UnitModalDetail = ({
   onClose,
   onToggleFavorite,
   onCompareUnit,
-  onComparePolicy,
+  onPriceSheet,
+  onLoanCalculator,
+  onBookingLock,
   onShare,
   onMore,
   onCopyImage,
@@ -122,7 +128,6 @@ const UnitModalDetail = ({
           direction={direction}
           landArea={landArea}
           onCompareUnit={onCompareUnit}
-          onComparePolicy={onComparePolicy}
           onShare={onShare}
           onMore={onMore}
         />
@@ -131,8 +136,10 @@ const UnitModalDetail = ({
       {/* ── Content: iPad/desktop 2 cot nhu cu, mobile xep 1 cot ── */}
       <div className="no-scrollbar flex min-h-0 flex-1 overflow-hidden max-md:flex-col max-md:overflow-y-auto">
         <div className="flex w-1/2 shrink-0 flex-col overflow-hidden border-r border-gray-200 max-md:w-full max-md:border-r-0">
-          <div className="flex-1 overflow-hidden pt-2 pr-1 max-md:overflow-visible max-md:pr-0 max-md:pt-3 laptop:flex laptop:min-h-0 laptop:flex-col">
-            <div className="laptop:min-h-0 laptop:flex-1 laptop:overflow-hidden">
+          {/* Cot trai CUON duoc thay vi ep anh vua chieu cao: anh giu dang dung
+              tron ven, man hinh thap thi nguoi dung keo xuong xem tiep. */}
+          <div className="no-scrollbar flex-1 overflow-y-auto pt-2 pr-1 max-md:overflow-visible max-md:pr-0 max-md:pt-3">
+            <div>
               <UnitModalGallery
                 images={images}
                 alt={imageAlt}
@@ -140,7 +147,7 @@ const UnitModalDetail = ({
                 onDownload={onDownloadImage}
               />
             </div>
-            <div className="mt-2 laptop:mt-1.5 laptop:shrink-0">
+            <div className="mt-2 laptop:mt-1.5">
               <UnitModalAdvisor
                 advisors={advisors}
                 onCall={onCallAdvisor}
@@ -151,12 +158,15 @@ const UnitModalDetail = ({
         </div>
 
         <div className="no-scrollbar w-1/2 overflow-y-auto pt-2 pl-1 max-md:w-full max-md:overflow-visible max-md:pl-0 max-md:pb-3">
-          <UnitModalInfo />
+          <UnitModalInfo
+            onPriceSheet={onPriceSheet}
+            onLoanCalculator={onLoanCalculator}
+          />
         </div>
       </div>
 
       {/* ── Footer (cố định phía dưới) ─────────────────────────── */}
-      <UnitModalBottom onShare={onShare} />
+      <UnitModalBottom onShare={onShare} onBookingLock={onBookingLock} />
     </div>
   );
 };

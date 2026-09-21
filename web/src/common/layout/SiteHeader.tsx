@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from '@/i18n/navigation';
 import { usePathname } from '@/i18n/navigation';
 import Image from 'next/image';
@@ -377,7 +377,19 @@ const SiteHeader = () => {
             nam sat nhau qua nen huy hieu lan sang icon ben canh - noi khoang
             cach ra. Desktop con thanh nav day du nen van gap-1 nhu cu. */}
         <div className="relative z-10 flex shrink-0 items-center gap-2 md:gap-2.5 xl:gap-1">
-          <LanguageSwitcher iconClass={iconColor} />
+          {/*
+            LanguageSwitcher doc useSearchParams de giu nguyen query khi doi
+            ngon ngu. Header nam trong layout nen neu khong boc Suspense, MOI
+            trang tinh deu bi Next tu choi prerender ("useSearchParams() should
+            be wrapped in a suspense boundary") va `next build` dung lai o trang
+            dau tien - dung loi vua gap tren CI.
+
+            Fallback la mot o trong dung bang nut that (36x36) de header khong
+            giat mot nhip luc client nha ra.
+          */}
+          <Suspense fallback={<span className="h-9 w-9 shrink-0" aria-hidden />}>
+            <LanguageSwitcher iconClass={iconColor} />
+          </Suspense>
 
           <Link
             href="/tin-nhan"

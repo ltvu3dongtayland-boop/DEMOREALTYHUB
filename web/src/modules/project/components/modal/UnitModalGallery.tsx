@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiCopy, FiDownload, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 type UnitModalGalleryProps = {
@@ -28,6 +28,9 @@ type UnitModalGalleryProps = {
  * └────────────────────────────────────────┘
  * ```
  */
+/** Bao lau doi mot anh khi chay tu dong */
+const AUTOPLAY_MS = 4000;
+
 const UnitModalGallery = ({
   images,
   alt = "Hình ảnh căn",
@@ -35,11 +38,30 @@ const UnitModalGallery = ({
   onDownload,
 }: UnitModalGalleryProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
+  // Ro chuot vao anh la dung chay - nguoi dung dang xem tam do
+  const [isPaused, setIsPaused] = useState(false);
+
+  /**
+   * Tu chay vong tron.
+   *
+   * activeIndex nam trong danh sach phu thuoc nen moi lan doi anh (tu dong hay
+   * do nguoi dung bam) dong ho deu duoc dat lai - bam xong khong bi nhay tiep
+   * mot phat nua ngay sau do.
+   */
+  useEffect(() => {
+    if (images.length < 2 || isPaused) return;
+
+    const timer = setTimeout(
+      () => setActiveIndex((prev) => (prev + 1) % images.length),
+      AUTOPLAY_MS,
+    );
+    return () => clearTimeout(timer);
+  }, [activeIndex, images.length, isPaused]);
 
   // Không có ảnh: hiển thị placeholder gradient
   if (!images.length) {
     return (
-      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-linear-to-br from-gray-100 to-gray-200 max-md:aspect-[16/10] laptop:aspect-auto laptop:h-full laptop:min-h-0">
+      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-linear-to-br from-gray-100 to-gray-200">
         <div className="flex h-full items-center justify-center text-gray-400">
           Đang cập nhật hình ảnh
         </div>
@@ -59,11 +81,16 @@ const UnitModalGallery = ({
     setActiveIndex((prev) => (prev + 1) % total);
   };
 
-  // Dien thoai dung dung ti le anh dung 4/5 nhu cac khuon kho khac: anh phoi
-  // canh von la anh dung, ep ve 16/10 la cat mat phan tren duoi nen nhin ra
-  // hinh gan vuong. max-h giu cho anh khong an het mot man hinh.
+  // Moi khuon kho deu mot ti le dung 4/5 chiem tron be ngang cot: anh phoi
+  // canh von la anh dung, ep ngang di la cat mat phan tren duoi. Man hinh thap
+  // khong lam anh be lai - cot ben trai cuon duoc, nguoi dung keo xuong.
+  // Rieng dien thoai gioi han 58vh de anh khong an het mot man hinh.
   return (
-    <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-gray-100 max-md:max-h-[58vh] laptop:aspect-auto laptop:h-full laptop:min-h-0">
+    <div
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-gray-100 max-md:max-h-[58vh]"
+    >
       {/* ── Ảnh lớn ─────────────────────────────────────────── */}
       <img
         src={current}

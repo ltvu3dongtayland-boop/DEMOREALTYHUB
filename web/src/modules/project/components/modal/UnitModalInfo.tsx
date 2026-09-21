@@ -8,6 +8,8 @@ import {
   FiSend,
   FiMessageSquare,
   FiZap,
+  FiPercent,
+  FiGrid,
   FiCompass,
   FiHome,
   FiSearch,
@@ -24,7 +26,25 @@ const QUICK_SUGGESTIONS = [
   { icon: FiShield, text: 'Pháp lý dự án' },
 ];
 
-export default function PropertyDetailCard() {
+type PropertyDetailCardProps = {
+  /**
+   * Ma layout/mat bang cua can - hien ngang dong "Dien tich".
+   *
+   * Du lieu can hien chua co truong nay (mock lan backend deu chua), nen mac
+   * dinh la dau gach: cho san chu de khi co du lieu chi viec truyen vao.
+   */
+  layout?: string;
+  /** Mo phieu tinh gia - nut nho nam ngang dong "Gia" */
+  onPriceSheet?: () => void;
+  /** Mo bang tinh lai vay - nut nho nam ngang dong "Gia" */
+  onLoanCalculator?: () => void;
+};
+
+export default function PropertyDetailCard({
+  layout,
+  onPriceSheet,
+  onLoanCalculator,
+}: PropertyDetailCardProps = {}) {
   const [chatMessage, setChatMessage] = useState('');
   const chatInputRef = useRef<HTMLInputElement>(null);
 
@@ -55,16 +75,34 @@ export default function PropertyDetailCard() {
     <div className="mx-auto bg-white rounded-2xl font-sans text-slate-800 space-y-3">
       {/* 1. GIÁ */}
       <div className="bg-white p-3 rounded-xl border border-slate-100 shadow-2xs">
-        <div className="flex justify-between items-center mb-2">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-blue-50 text-blue-600 rounded-lg">
               <FiDollarSign className="w-5 h-5" />
             </div>
             <span className="font-bold text-base text-slate-900">Giá</span>
           </div>
-          <button className="flex items-center gap-1 text-sm text-blue-600 font-medium bg-blue-50/60 hover:bg-blue-100 px-2.5 py-1 rounded-full border border-blue-100 transition-colors">
-            Chi tiết
-          </button>
+
+          {/* Hai cong cu tinh toan an theo dong "Gia" - chung noi ve cung mot
+              con so nen dat canh no de nguoi dung khoi phai di tim */}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onPriceSheet}
+              className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:border-blue-200 hover:bg-blue-50/60 hover:text-blue-700"
+            >
+              Phiếu tính giá
+              <FiFileText className="w-3.5 h-3.5 text-blue-500" />
+            </button>
+            <button
+              type="button"
+              onClick={onLoanCalculator}
+              className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:border-blue-200 hover:bg-blue-50/60 hover:text-blue-700"
+            >
+              Tính lãi vay
+              <FiPercent className="w-3.5 h-3.5 text-blue-500" />
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 rounded-lg bg-slate-50/80 p-2.5 text-sm max-md:grid-cols-1 max-md:gap-2 md:max-lg:gap-x-1 md:max-lg:p-2 md:max-lg:text-xs">
@@ -89,16 +127,21 @@ export default function PropertyDetailCard() {
 
       {/* 2. DIỆN TÍCH */}
       <div className="bg-white p-3 rounded-xl border border-slate-100 shadow-2xs">
-        <div className="flex justify-between items-center mb-2">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-blue-50 text-blue-600 rounded-lg">
               <FiMaximize2 className="w-5 h-5" />
             </div>
             <span className="font-bold text-base text-slate-900">Diện tích</span>
           </div>
-          <button className="flex items-center gap-1 text-sm text-blue-600 font-medium bg-blue-50/60 hover:bg-blue-100 px-2.5 py-1 rounded-full border border-blue-100 transition-colors">
-            Chi tiết
-          </button>
+
+          {/* Dung y het kieu nut "Phieu tinh gia" ben khoi Gia: cung o mot cot,
+              hai nhan nay canh nhau nen lech kieu la thay ngay */}
+          <span className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700">
+            Layout
+            {layout && <span className="text-slate-500">{layout}</span>}
+            <FiGrid className="w-3.5 h-3.5 text-blue-500" />
+          </span>
         </div>
 
         <div className="bg-slate-50/80 p-2.5 rounded-lg grid grid-cols-2 text-sm divide-x divide-slate-200">
@@ -115,16 +158,13 @@ export default function PropertyDetailCard() {
 
       {/* 3. CSBH & QUÀ TẶNG */}
       <div className="bg-white p-3 rounded-xl border border-slate-100 shadow-2xs">
-        <div className="flex justify-between items-center mb-2">
+        <div className="flex items-center mb-2">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-blue-50 text-blue-600 rounded-lg">
               <FiGift className="w-5 h-5" />
             </div>
             <span className="font-bold text-base text-slate-900">CSBH & Quà tặng</span>
           </div>
-          <button className="flex items-center gap-1 text-sm text-blue-600 font-medium bg-blue-50/60 hover:bg-blue-100 px-2.5 py-1 rounded-full border border-blue-100 transition-colors">
-            Chi tiết
-          </button>
         </div>
 
         <div className="bg-slate-50/80 p-2.5 rounded-lg grid grid-cols-2 text-sm divide-x divide-slate-200">
@@ -154,7 +194,7 @@ export default function PropertyDetailCard() {
             <span className="font-medium text-slate-900">Giản xây</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-slate-600">Quy cách:</span>
+            <span className="text-slate-600">Loại giỏ hàng</span>
             <span className="font-medium text-slate-900">Thứ cấp</span>
           </div>
         </div>
